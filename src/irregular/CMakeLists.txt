@@ -18,7 +18,8 @@ target_include_directories(PackingSolver_irregular PRIVATE
 target_link_libraries(PackingSolver_irregular PUBLIC
     PackingSolver_algorithms
     TreeSearchSolver::treesearchsolver
-    Threads::Threads)
+    Threads::Threads
+    CGAL)
 if (PackingSolver_USE_KNITRO)
     target_link_libraries(PackingSolver_irregular PUBLIC
         KnitroCpp::knitrocpp)

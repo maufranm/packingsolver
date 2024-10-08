@@ -68,3 +68,12 @@ if (PACKINGSOLVER_USE_KNITRO)
         EXCLUDE_FROM_ALL)
     FetchContent_MakeAvailable(knitrocpp)
 endif()
+
+# Fetch CGAL
+include(FetchContent)
+FetchContent_Declare(
+  CGAL
+  GIT_REPOSITORY https://github.com/CGAL/cgal.git
+  GIT_TAG        releases/CGAL-5.6.1  # Version souhaitée de CGAL
+  EXCLUDE_FROM_ALL)
+FetchContent_MakeAvailable(CGAL)
