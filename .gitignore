@@ -7,3 +7,5 @@ checker/*
 OLD
 instances/*
 output/*
+build*
+install*
