@@ -73,8 +73,6 @@ endif()
 include(FetchContent)
 FetchContent_Declare(
   CGAL
-  GIT_REPOSITORY https://github.com/CGAL/cgal.git
-  GIT_TAG        v5.6.1 # Version souhaitée de CGAL
+  URL https://github.com/CGAL/cgal/archive/refs/tags/v5.6.1.tar.gz
   EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(CGAL)
-find_package(CGAL REQUIRED)

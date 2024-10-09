@@ -1,5 +1,4 @@
 find_package(Threads)
-find_package(CGAL REQUIRED)
 add_library(PackingSolver_irregular)
 target_sources(PackingSolver_irregular PRIVATE
     instance.cpp
