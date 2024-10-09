@@ -68,3 +68,11 @@ if (PACKINGSOLVER_USE_KNITRO)
         EXCLUDE_FROM_ALL)
     FetchContent_MakeAvailable(knitrocpp)
 endif()
+
+# Fetch CGAL
+#include(FetchContent)
+#FetchContent_Declare(
+ # CGAL
+  #URL https://github.com/CGAL/cgal/releases/download/v5.6.1/CGAL-5.6.1.zip
+  #EXCLUDE_FROM_ALL)
+#FetchContent_MakeAvailable(CGAL)
