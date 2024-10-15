@@ -1,4 +1,4 @@
-#include "packingsolver/src/irregular/instance.hpp"
+#include "src/irregular/instance.hpp"
 
 namespace packingsolver
 {
