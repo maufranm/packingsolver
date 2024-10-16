@@ -1,5 +1,5 @@
 #include "packingsolver/irregular/instance.hpp"
-#include "irregular/test.hpp"
+#include "irregular/minkowski.hpp"
 #include <CGAL/minkowski_sum_2.h>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
