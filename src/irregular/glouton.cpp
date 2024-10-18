@@ -33,10 +33,10 @@ def first_try(instance problème):
                 }
             )
             then {
-                list_placed_poly.append( item+(x,y) )
+                list_placed_poly.append( item +(x,y)-item[0] )  
                 break for
             }
-        } 
+        }
     }
 
     [générer instance solution avec list_placed_poly]
