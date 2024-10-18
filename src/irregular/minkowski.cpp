@@ -1,5 +1,5 @@
 #include "packingsolver/irregular/instance.hpp"
-#include "irregular/test.hpp"
+#include "irregular/minkowski.hpp"
 #include <CGAL/minkowski_sum_2.h>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
@@ -40,6 +40,15 @@ Polygon_with_holes_2 irregular::NFP(
 {
     Polygon_2 polyFixed = get_poly(shapeFixed);
     Polygon_2 polyMobile = get_poly(shapeMobile);
-    polyMobile.reverse_orientation();
+    polyMobile.reverse_orientation();  // "-P" = P.reverse_orientation() ?
     return minkowski_sum_by_full_convolution_2(polyFixed, polyMobile);
+}
+
+Polygon_with_holes_2 irregular::IFP( 
+    Shape shapeContainer, Shape shapeMobile)
+{
+    Polygon_2 container = get_poly(shapeContainer).reverse_orientation();  // ext(container) = container.reverse_orientation()  ?
+    Polygon_2 polyMobile = get_poly(shapeMobile);
+    polyMobile.reverse_orientation();  // "-P" = P.reverse_orientation()
+    return minkowski_sum_by_full_convolution_2(container, polyMobile);
 }
