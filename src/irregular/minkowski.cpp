@@ -40,6 +40,15 @@ Polygon_with_holes_2 irregular::NFP(
 {
     Polygon_2 polyFixed = get_poly(shapeFixed);
     Polygon_2 polyMobile = get_poly(shapeMobile);
-    polyMobile.reverse_orientation();
-    return minkowski_sum_by_full_convolution_2(polyFixed, polyMobile);
+    polyMobile.reverse_orientation();  // "-P" = P.reverse_orientation() ?
+    return minkowski_sum_by_full_convolution_2(polyFixed, polyMobile);  //ajouter polyMobile[0] ?
+}
+
+Polygon_with_holes_2 irregular::IFP( 
+    Shape shapeContainer, Shape shapeMobile)
+{
+    Polygon_2 container = get_poly(shapeContainer).reverse_orientation();  // ext(container) = container.reverse_orientation()  ?
+    Polygon_2 polyMobile = get_poly(shapeMobile);
+    polyMobile.reverse_orientation();  // "-P" = P.reverse_orientation()
+    return minkowski_sum_by_full_convolution_2(container, polyMobile).reverse_orientation();  //ajouter polyMobile[0] ?
 }
