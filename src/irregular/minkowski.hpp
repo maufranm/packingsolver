@@ -18,7 +18,17 @@ Point_2 get_point(
 Polygon_2 get_poly(
     Shape s);
 
-Polygon_with_holes_2 NFP( 
+Shape get_shape(
+    Polygon_2 p);
+
+Polygon_2 negative_polygon(
+    Polygon_2 polygon);
+
+Polygon_with_holes_2 NFP(
     Shape shapeFixed, Shape shapeMobile);
+
+Polygon_with_holes_2 IFP(
+    Shape shapeContainer, Shape shapeMobile);
 }
+
 }

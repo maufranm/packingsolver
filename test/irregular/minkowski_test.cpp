@@ -26,8 +26,15 @@ namespace
     // est ce que je retourne un poly ? 
     // est ce que ses points sont bien ceux que je veux ?
     
+    // get shape
+    // est-ce que je retourne une shape
+    // est ce que j'ai les bons points ?
+
+    // neg
+    // est-ce que j'ai les bons points ?
+    // je retourne bien un poly ?
+
     // NFP
-    // est ce que le nfp retourné est un poly ?
     // est ce que ce sont les bons points qui sont retournés ?
 }
 
@@ -43,17 +50,55 @@ TEST(Irregular, ShapeToPolygon)
     EXPECT_EQ(polygon[3], Point_2(3,3));
 }
 
+TEST(Irregular, PolygonToShape)
+{
+    Polygon_2 p;
+    p.push_back(Point_2(2,3));
+    p.push_back(Point_2(2,2));
+    p.push_back(Point_2(3,2));
+    p.push_back(Point_2(3,3));
+
+    Shape shape = get_shape(p);
+    
+
+    ASSERT_TRUE((std::is_same<decltype(get_shape(p)), Shape>::value));
+    EXPECT_EQ(shape.elements[0].start.x, 2);
+    EXPECT_EQ(shape.elements[0].start.y, 3);    
+    EXPECT_EQ(shape.elements[1].start.x, 2);
+    EXPECT_EQ(shape.elements[1].start.y, 2);
+    EXPECT_EQ(shape.elements[2].start.x, 3);
+    EXPECT_EQ(shape.elements[2].start.y, 2);
+    EXPECT_EQ(shape.elements[3].start.x, 3);
+    EXPECT_EQ(shape.elements[3].start.y, 3);
+}
+
+TEST(Irregular, Negative)
+{
+    Polygon_2 p;
+    p.push_back(Point_2(2,3));
+    p.push_back(Point_2(2,2));
+    p.push_back(Point_2(3,2));
+    p.push_back(Point_2(3,3));
+
+    Polygon_2 pn = negative_polygon(p);
+
+    EXPECT_EQ(pn[0], Point_2(-2,-3));    //by shape construction
+    EXPECT_EQ(pn[1], Point_2(-2,-2));
+    EXPECT_EQ(pn[2], Point_2(-3,-2));
+    EXPECT_EQ(pn[3], Point_2(-3,-3));
+}
 //memory problem with this one
 TEST(Irregular, NFP)
 {
     Shape shapeFixed = build_polygon_shape({{3,2},{3,3},{2,3},{2,2}});
     Shape shapeMobile = build_polygon_shape({{-3,1},{-3,2},{-4,2},{-4,1}});
 
-    Polygon_with_holes_2 poly = NFP(shapeFixed, shapeMobile);
-    Polygon_2 outerPoly = poly.outer_boundary();
+    Polygon_2 poly = NFP(shapeFixed, shapeMobile).outer_boundary();
 
-    EXPECT_EQ(outerPoly[0], Point_2(1,1));
-    EXPECT_EQ(outerPoly[1], Point_2(3,1));
-    EXPECT_EQ(outerPoly[2], Point_2(3,3));
-    EXPECT_EQ(outerPoly[3], Point_2(1,3));
+    std::cout << poly;
+
+    EXPECT_EQ(poly[0], Point_2(1,1));
+    EXPECT_EQ(poly[1], Point_2(3,1));
+    EXPECT_EQ(poly[2], Point_2(3,3));
+    EXPECT_EQ(poly[3], Point_2(1,3));
 }
