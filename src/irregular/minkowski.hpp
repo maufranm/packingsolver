@@ -20,5 +20,10 @@ Polygon_2 get_poly(
 
 Polygon_with_holes_2 NFP( 
     Shape shapeFixed, Shape shapeMobile);
+
+
+Polygon_with_holes_2 IFP(
+    Shape shapeContainer, Shape shapeMobile);
 }
+
 }
