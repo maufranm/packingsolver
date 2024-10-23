@@ -13,31 +13,28 @@ using namespace packingsolver;
 using namespace packingsolver::irregular;
 
 Point_2 irregular::get_point(
-    ShapeElement shape_el) 
+    const ShapeElement& shape_el)   //to avoid copies
 {
     return Point_2(shape_el.start.x,shape_el.start.y);
 }
 
 //from shape to polygon2
 Polygon_2 irregular::get_poly(
-    Shape s) 
+    const Shape& s) 
 {
+    Polygon_2 pgn;
     // need points of the Shape
     int n = s.elements.size();
-    Point_2* points = new Point_2[n];
-    int i = 0;
-    for (int j = 0; j<s.elements.size() ; j++, i++)
+    for (int j = 0; j<s.elements.size() ; j++)
     {
-        points[i] = get_point(s.elements[j]);
+        pgn.push_back(get_point(s.elements[j]));
     }
-    // we have all points
-    Polygon_2 pgn(points, points+n);
     return pgn;
 }
 
 //from poly to shape
 Shape irregular::get_shape(
-    Polygon_2 p)
+    const Polygon_2& p)
 {
     Shape shape;
     for (ElementPos pos = 0; pos < (ElementPos)p.size() - 1; ++pos) {
@@ -60,37 +57,33 @@ Shape irregular::get_shape(
 }
 
 Polygon_2 irregular::negative_polygon(
-    Polygon_2 polygon)
+    const Polygon_2& polygon)
 {
+    Polygon_2 newPoly;
     for (int j = 0; j < polygon.size(); j++) 
     {
-        polygon[j] = Point_2(-polygon[j].x(), -polygon[j].y());
+        newPoly.push_back(Point_2(-polygon[j].x(), -polygon[j].y()));
     }
-    return polygon;
+    return newPoly;
 }
 
 //poly to shape -> return shape instead or poly nfp & ifp
 
 Polygon_with_holes_2 irregular::NFP( 
-    Shape shapeFixed, Shape shapeMobile)
+    const Shape& shapeFixed, const Shape& shapeMobile)
 {
     Polygon_2 polyFixed = get_poly(shapeFixed);
     Polygon_2 polyMobile = get_poly(shapeMobile);
 
     Polygon_2 polyMobileNeg = negative_polygon(polyMobile);  // "P" to "-P"
-    Polygon_2 refPoly;
-    Point_2 refPoint = polyMobile[0];
-    refPoly.push_back(refPoint);
-
-    Polygon_2 polyMinkowski = minkowski_sum_by_full_convolution_2(polyFixed, polyMobile).outer_boundary();  //rest to polyMobile[0]
     
-    Polygon_with_holes_2 p = minkowski_sum_by_full_convolution_2(polyMinkowski, polyMobile); //polygon shift of the reference point
-    return p;
+    Polygon_with_holes_2 polyMinkowski = minkowski_sum_by_full_convolution_2(polyFixed, polyMobileNeg);
+    return polyMinkowski;
     }
 
 /*
 Polygon_with_holes_2 irregular::IFP( 
-    Shape shapeContainer, Shape shapeMobile)
+    const Shape& shapeContainer, const Shape& shapeMobile)
 {
     Polygon_2 container = get_poly(shapeContainer);
     container.reverse_orientation();  // ext(container) = container.reverse_orientation()

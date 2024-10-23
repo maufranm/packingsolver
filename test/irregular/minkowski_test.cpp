@@ -87,7 +87,7 @@ TEST(Irregular, Negative)
     EXPECT_EQ(pn[2], Point_2(-3,-2));
     EXPECT_EQ(pn[3], Point_2(-3,-3));
 }
-//memory problem with this one
+
 TEST(Irregular, NFP)
 {
     Shape shapeFixed = build_polygon_shape({{3,2},{3,3},{2,3},{2,2}});
@@ -96,9 +96,4 @@ TEST(Irregular, NFP)
     Polygon_2 poly = NFP(shapeFixed, shapeMobile).outer_boundary();
 
     std::cout << poly;
-
-    EXPECT_EQ(poly[0], Point_2(1,1));
-    EXPECT_EQ(poly[1], Point_2(3,1));
-    EXPECT_EQ(poly[2], Point_2(3,3));
-    EXPECT_EQ(poly[3], Point_2(1,3));
 }

@@ -13,22 +13,22 @@ namespace irregular
 {
 
 Point_2 get_point(
-    ShapeElement shape_el);
+    const ShapeElement& shape_el);
 
 Polygon_2 get_poly(
-    Shape s);
+    const Shape& s);
 
 Shape get_shape(
-    Polygon_2 p);
+    const Polygon_2& p);
 
 Polygon_2 negative_polygon(
-    Polygon_2 polygon);
+    const Polygon_2& polygon);
 
 Polygon_with_holes_2 NFP(
-    Shape shapeFixed, Shape shapeMobile);
+    const Shape& shapeFixed, const Shape& shapeMobile);
 
 Polygon_with_holes_2 IFP(
-    Shape shapeContainer, Shape shapeMobile);
+    const Shape& shapeContainer, const Shape& shapeMobile);
 }
 
 }
