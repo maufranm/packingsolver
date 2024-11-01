@@ -47,8 +47,15 @@ Polygon_with_holes_2 irregular::NFP(
 Polygon_with_holes_2 irregular::IFP( 
     Shape shapeContainer, Shape shapeMobile)
 {
-    Polygon_2 container = get_poly(shapeContainer).reverse_orientation();  // ext(container) = container.reverse_orientation()  ?
+    Polygon_2 container = get_poly(shapeContainer);  // ext(container) = container.reverse_orientation()  ?
+    container.reverse_orientation();
     Polygon_2 polyMobile = get_poly(shapeMobile);
-    polyMobile.reverse_orientation();  // "-P" = P.reverse_orientation()
-    return minkowski_sum_by_full_convolution_2(container, polyMobile).reverse_orientation;  //ajouter polyMobile[0] ?
+    // polyMobile.reverse_orientation();  // "-P" = P.reverse_orientation()
+    minkowski_sum_by_full_convolution_2(container, polyMobile);  //ajouter polyMobile[0] ?
+}
+
+
+bool irregular::is_inside( Point_2 point, Polygon_with_holes_2 polygon)
+{
+   return true
 }
