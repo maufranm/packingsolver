@@ -55,7 +55,16 @@ Polygon_with_holes_2 irregular::IFP(
 }
 
 
-bool irregular::is_inside( Point_2 point, Polygon_with_holes_2 polygon)
+bool irregular::is_inside( Point_2 point, Polygon_2 polygon)  //attention : il faudrait le faire pour polygon_win_holes
 {
-   return true
+    return CGAL::bounded_side_2(polygon.vertices_begin(), polygon.vertices_end(), point,  CGAL::Exact_predicates_inexact_constructions_kernel() ) != CGAL::ON_UNBOUNDED_SIDE;
+}
+
+bool intersection(
+    Polygon_2 poly1, Point_2 emplacement1, Polygon_2 poly2, Point_2 emplacement2)
+{
+    Point_2 abstract_point = emplacement1-poly1[0] - ( emplacement2 - poly_2[0]);  //poly_i[0] signifie le premier sommet de poly_i (le point de référence)
+    Polygon_with_holes_2 NFP(poly1, poly2);
+    bool b = CGAL::oriented_side(abstract_point, NFPsList[j]) == CGAL::ON_NEGATIVE_SIDE;
+    return b;
 }
