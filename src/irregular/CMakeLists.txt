@@ -12,7 +12,7 @@ target_sources(PackingSolver_irregular PRIVATE
     polygon_trapezoidation.cpp
     polygon_simplification.cpp
     branching_scheme.cpp
-    test.cpp)
+    minkowski.cpp)
 target_include_directories(PackingSolver_irregular PUBLIC
     ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(PackingSolver_irregular PRIVATE

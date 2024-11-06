@@ -13,11 +13,12 @@ namespace irregular
 {
 
 Point_2 get_point(
-    ShapeElement shape_el);
+    const ShapeElement& shape_el);
 
 Polygon_2 get_poly(
-    Shape s);
+    const Shape& s);
 
+<<<<<<< HEAD
 Polygon_with_holes_2 NFP( 
     Shape shapeFixed, Shape shapeMobile);
 
@@ -27,3 +28,19 @@ Polygon_with_holes_2 IFP(
 }
 
 }
+=======
+Shape get_shape(
+    const Polygon_2& p);
+
+Polygon_2 negative_polygon(
+    const Polygon_2& polygon);
+
+Polygon_with_holes_2 NFP(
+    const Shape& shapeFixed, const Shape& shapeMobile);
+
+Polygon_with_holes_2 IFP(
+    const Shape& shapeContainer, const Shape& shapeMobile);
+}
+
+}
+>>>>>>> no-fit-polygon-test

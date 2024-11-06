@@ -13,52 +13,94 @@ using namespace packingsolver;
 using namespace packingsolver::irregular;
 
 Point_2 irregular::get_point(
-    ShapeElement shape_el) 
+    const ShapeElement& shape_el)   //to avoid copies
 {
     return Point_2(shape_el.start.x,shape_el.start.y);
 }
 
 //from shape to polygon2
 Polygon_2 irregular::get_poly(
-    Shape s) 
+    const Shape& s) 
 {
+    Polygon_2 pgn;
     // need points of the Shape
     int n = s.elements.size();
-    Point_2* points = new Point_2[n];
-    int i = 0;
-    for (int j = 0; j<=s.elements.size() ; j++, i++)
+    for (int j = 0; j<s.elements.size() ; j++)
     {
-        points[i] = get_point(s.elements[j]);
+        pgn.push_back(get_point(s.elements[j]));
     }
-    // we have all points
-    Polygon_2 pgn(points, points+n);
+    
     return pgn;
 }
 
+//from poly to shape
+Shape irregular::get_shape(
+    const Polygon_2& p)
+{
+    Shape shape;
+    for (ElementPos pos = 0; pos < (ElementPos)p.size() - 1; ++pos) {
+        ShapeElement elem;
+        elem.type = ShapeElementType::LineSegment;
+        elem.start = {p[pos].x(), p[pos].y()};
+        elem.end = {p[pos+1].x(), p[pos+1].y()};
+        shape.elements.push_back(elem);
+    }
+    //the last line between last and first
+    ShapeElement elem;
+    ElementPos posF = 0;
+    ElementPos posL = p.size() - 1;
+    elem.type = ShapeElementType::LineSegment;
+    elem.start = {p[posL].x(), p[posL].y()};
+    elem.end = {p[posF].x(), p[posF].y()};
+    shape.elements.push_back(elem);
+
+    return shape;
+}
+
+Polygon_2 irregular::negative_polygon(
+    const Polygon_2& polygon)
+{
+    Polygon_2 newPoly;
+    for (int j = 0; j < polygon.size(); j++) 
+    {
+        newPoly.push_back(Point_2(-polygon[j].x(), -polygon[j].y()));
+    }
+    return newPoly;
+}
+
+//poly to shape -> return shape instead or poly nfp & ifp
+
 Polygon_with_holes_2 irregular::NFP( 
-    Shape shapeFixed, Shape shapeMobile)
+    const Shape& shapeFixed, const Shape& shapeMobile)
 {
     Polygon_2 polyFixed = get_poly(shapeFixed);
     Polygon_2 polyMobile = get_poly(shapeMobile);
-    polyMobile.reverse_orientation();  // "-P" = P.reverse_orientation() ?
-    return minkowski_sum_by_full_convolution_2(polyFixed, polyMobile);  //ajouter polyMobile[0] ?
-}
 
-Polygon_with_holes_2 irregular::IFP( 
-    Shape shapeContainer, Shape shapeMobile)
+    Polygon_2 polyMobileNeg = negative_polygon(polyMobile);  // "P" to "-P"
+    
+    Polygon_with_holes_2 polyMinkowski = minkowski_sum_by_full_convolution_2(polyFixed, polyMobileNeg);
+    return polyMinkowski;
+    }
+
+//on peut vérif que notre poly est bien sous les bornes x et y du rectangle
+
+/*Polygon_with_holes_2 irregular::IFP( 
+    const Shape& shapeContainer, const Shape& shapeMobile)
 {
-    Polygon_2 container = get_poly(shapeContainer);  // ext(container) = container.reverse_orientation()  ?
-    container.reverse_orientation();
+    Polygon_2 container = get_poly(shapeContainer);
+    container.reverse_orientation();  // ext(container) = container.reverse_orientation()
     Polygon_2 polyMobile = get_poly(shapeMobile);
-    // polyMobile.reverse_orientation();  // "-P" = P.reverse_orientation()
-    minkowski_sum_by_full_convolution_2(container, polyMobile);  //ajouter polyMobile[0] ?
-}
+    Polygon_2 polyMobileNeg = negative_polygon(polyMobile);  // "P" to "-P"
+    Polygon_2 refPoint;
+    refPoint.push_back(polyMobile[0]);
+    Polygon_with_holes_2 polyMinkowski = minkowski_sum_by_full_convolution_2(container, polyMobile);
+    return minkowski_sum_by_full_convolution_2(polyMinkowski.outer_boundary(), refPoint).reverse_orientation(); //minkowski avce trou
+}*/
+
+//struct hashmap nfp -> (it item1, it shape1, it item2, it shape2 <NFP>)
 
 
-bool irregular::is_inside( Point_2 point, Polygon_2 polygon)  //attention : il faudrait le faire pour polygon_win_holes
-{
-    return CGAL::bounded_side_2(polygon.vertices_begin(), polygon.vertices_end(), point,  CGAL::Exact_predicates_inexact_constructions_kernel() ) != CGAL::ON_UNBOUNDED_SIDE;
-}
+
 
 bool intersection(
     Polygon_2 poly1, Point_2 emplacement1, Polygon_2 poly2, Point_2 emplacement2)
