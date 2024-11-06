@@ -29,6 +29,7 @@ Polygon_2 irregular::get_poly(
     {
         pgn.push_back(get_point(s.elements[j]));
     }
+    
     return pgn;
 }
 
@@ -81,8 +82,9 @@ Polygon_with_holes_2 irregular::NFP(
     return polyMinkowski;
     }
 
-/*
-Polygon_with_holes_2 irregular::IFP( 
+//on peut vérif que notre poly est bien sous les bornes x et y du rectangle
+
+/*Polygon_with_holes_2 irregular::IFP( 
     const Shape& shapeContainer, const Shape& shapeMobile)
 {
     Polygon_2 container = get_poly(shapeContainer);
@@ -92,5 +94,7 @@ Polygon_with_holes_2 irregular::IFP(
     Polygon_2 refPoint;
     refPoint.push_back(polyMobile[0]);
     Polygon_with_holes_2 polyMinkowski = minkowski_sum_by_full_convolution_2(container, polyMobile);
-    return minkowski_sum_by_full_convolution_2(polyMinkowski.outer_boundary(), refPoint).reverse_orientation();
+    return minkowski_sum_by_full_convolution_2(polyMinkowski.outer_boundary(), refPoint).reverse_orientation(); //minkowski avce trou
 }*/
+
+//struct hashmap nfp -> (it item1, it shape1, it item2, it shape2 <NFP>)
