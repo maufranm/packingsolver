@@ -3,6 +3,7 @@
 #include "packingsolver/irregular/algorithm_formatter.hpp"
 #include "packingsolver/irregular/instance_builder.hpp"
 #include "irregular/branching_scheme.hpp"
+#include "irregular/local_search.hpp"
 #include "algorithms/dichotomic_search.hpp"
 #include "algorithms/sequential_value_correction.hpp"
 #include "algorithms/column_generation.hpp"
@@ -357,6 +358,29 @@ void optimize_column_generation(
     columngenerationsolver::limited_discrepancy_search(cgs_model, cgslds_parameters);
 }
 
+void optimize_local_search(
+        const Instance& instance,
+        const OptimizeParameters& parameters,
+        AlgorithmFormatter& algorithm_formatter)
+{
+    LocalSearchParameters ls_parameters;
+    ls_parameters.verbosity_level = 1;
+    ls_parameters.timer = parameters.timer;
+    // TODO
+    //if (parameters.optimization_mode != OptimizationMode::Anytime)
+    //    svc_parameters.maximum_number_of_iterations = parameters.not_anytime_sequential_value_correction_number_of_iterations;
+    ls_parameters.new_solution_callback = [&algorithm_formatter](
+            const packingsolver::Output<Instance, Solution>& ps_output)
+    {
+        const LocalSearchOutput& ls_output
+            = static_cast<const LocalSearchOutput&>(ps_output);
+        std::stringstream ss;
+        ss << "LS";
+        algorithm_formatter.update_solution(ls_output.solution_pool.best(), ss.str());
+    };
+    local_search(instance, ls_parameters);
+}
+
 }
 
 const packingsolver::irregular::Output packingsolver::irregular::optimize(
@@ -376,15 +400,22 @@ const packingsolver::irregular::Output packingsolver::irregular::optimize(
     bool use_sequential_value_correction = parameters.use_sequential_value_correction;
     bool use_dichotomic_search = parameters.use_dichotomic_search;
     bool use_column_generation = parameters.use_column_generation;
+    bool use_local_search = parameters.use_local_search;
     if (instance.number_of_bins() <= 1) {
-        use_tree_search = true;
+        // Disable algorithms which are not available for this objective.
         use_sequential_single_knapsack = false;
         use_sequential_value_correction = false;
         use_dichotomic_search = false;
         use_column_generation = false;
+        // Automatic selection.
+        if (!use_tree_search
+                && !use_local_search) {
+            use_tree_search = true;
+        }
     } else if (instance.objective() == Objective::Knapsack) {
         // Disable algorithms which are not available for this objective.
         use_dichotomic_search = false;
+        use_local_search = false;
         // Automatic selection.
         if (!use_tree_search
                 && !use_sequential_single_knapsack
@@ -411,6 +442,7 @@ const packingsolver::irregular::Output packingsolver::irregular::optimize(
         if (instance.number_of_bin_types() > 1)
             use_column_generation = false;
         use_dichotomic_search = false;
+        use_local_search = false;
         // Automatic selection.
         if (!use_tree_search
                 && !use_sequential_single_knapsack
@@ -449,6 +481,7 @@ const packingsolver::irregular::Output packingsolver::irregular::optimize(
         } else {
             use_tree_search = false;
         }
+        use_local_search = false;
         // Automatic selection.
         if (!use_tree_search
                 && !use_sequential_single_knapsack
@@ -536,6 +569,16 @@ const packingsolver::irregular::Output packingsolver::irregular::optimize(
                         std::ref(parameters),
                         std::ref(algorithm_formatter)));
         }
+        // Local search.
+        if (use_local_search) {
+            exception_ptr_list.push_front(std::exception_ptr());
+            threads.push_back(std::thread(
+                        wrapper<decltype(&optimize_local_search), optimize_local_search>,
+                        std::ref(exception_ptr_list.front()),
+                        std::ref(instance),
+                        std::ref(parameters),
+                        std::ref(algorithm_formatter)));
+        }
         for (Counter i = 0; i < (Counter)threads.size(); ++i)
             threads[i].join();
         for (std::exception_ptr exception_ptr: exception_ptr_list)
@@ -581,6 +624,12 @@ const packingsolver::irregular::Output packingsolver::irregular::optimize(
                     parameters,
                     algorithm_formatter);
         }
+        // Local search.
+        if (use_local_search)
+            optimize_local_search(
+                    instance,
+                    parameters,
+                    algorithm_formatter);
     }
 
     const Solution& solution_best = output.solution_pool.best();
