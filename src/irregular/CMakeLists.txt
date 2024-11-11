@@ -11,7 +11,8 @@ target_sources(PackingSolver_irregular PRIVATE
     polygon_convex_hull.cpp
     polygon_trapezoidation.cpp
     polygon_simplification.cpp
-    branching_scheme.cpp)
+    branching_scheme.cpp
+    local_search.cpp)
 target_include_directories(PackingSolver_irregular PUBLIC
     ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(PackingSolver_irregular PRIVATE

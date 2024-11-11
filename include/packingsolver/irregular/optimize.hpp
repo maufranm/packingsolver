@@ -39,6 +39,9 @@ struct OptimizeParameters: packingsolver::Parameters<Instance, Solution>
     /** Use column generation algorithm. */
     bool use_column_generation = false;
 
+    /** Use local search algorithm. */
+    bool use_local_search = false;
+
     /** Guides used in the tree search algorithm. */
     std::vector<GuideId> tree_search_guides;
 
