@@ -18,17 +18,6 @@ Point_2 get_point(
 Polygon_2 get_poly(
     const Shape& s);
 
-<<<<<<< HEAD
-Polygon_with_holes_2 NFP( 
-    Shape shapeFixed, Shape shapeMobile);
-
-
-Polygon_with_holes_2 IFP(
-    Shape shapeContainer, Shape shapeMobile);
-}
-
-}
-=======
 Shape get_shape(
     const Polygon_2& p);
 
@@ -41,6 +30,4 @@ Polygon_with_holes_2 NFP(
 Polygon_with_holes_2 IFP(
     const Shape& shapeContainer, const Shape& shapeMobile);
 }
-
 }
->>>>>>> no-fit-polygon-test

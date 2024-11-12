@@ -102,11 +102,11 @@ Polygon_with_holes_2 irregular::NFP(
 
 
 //hashmap de nfp, points aléatoires, indices des deux polygones
-bool intersection(
+/*bool intersection(
     Polygon_2 poly1, Point_2 emplacement1, Polygon_2 poly2, Point_2 emplacement2)
 {
     Point_2 abstract_point = emplacement1-poly1[0] - ( emplacement2 - poly_2[0]);  //poly_i[0] signifie le premier sommet de poly_i (le point de référence)
     Polygon_with_holes_2 NFP(poly1, poly2);
     bool b = CGAL::oriented_side(abstract_point, NFPsList[j]) == CGAL::ON_POSITIVE_SIDE;
     return b;
-}
+}*/
