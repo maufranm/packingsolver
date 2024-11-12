@@ -82,6 +82,15 @@ Polygon_with_holes_2 irregular::NFP(
     return polyMinkowski;
     }
 
+Polygon_with_holes_2 NFP2( 
+    const Polygon_2 polyFixed, const Polygon_2 polyMobile)
+{
+    Polygon_2 polyMobileNeg = negative_polygon(polyMobile);  // "P" to "-P"
+
+    Polygon_with_holes_2 polyMinkowski = minkowski_sum_by_full_convolution_2(polyFixed, polyMobileNeg);
+    return polyMinkowski;
+    }
+
 //on peut vérif que notre poly est bien sous les bornes x et y du rectangle
 
 /*Polygon_with_holes_2 irregular::IFP( 
@@ -100,13 +109,11 @@ Polygon_with_holes_2 irregular::NFP(
 //struct hashmap nfp -> (it item1, it shape1, it item2, it shape2 <NFP>)
 
 
-
-//hashmap de nfp, points aléatoires, indices des deux polygones
-/*bool intersection(
-    Polygon_2 poly1, Point_2 emplacement1, Polygon_2 poly2, Point_2 emplacement2)
+bool is_intersected(
+    Polygon_2 poly1, Point_2 emplacement1, Polygon_2 poly2, Point_2 emplacement2, Polygon_with_holes_2 NFP)
 {
-    Point_2 abstract_point = emplacement1-poly1[0] - ( emplacement2 - poly_2[0]);  //poly_i[0] signifie le premier sommet de poly_i (le point de référence)
-    Polygon_with_holes_2 NFP(poly1, poly2);
-    bool b = CGAL::oriented_side(abstract_point, NFPsList[j]) == CGAL::ON_POSITIVE_SIDE;
+    auto abstract_point = emplacement1 - *(poly1.vertices_begin()) - ( emplacement2 -*(poly2.vertices_begin()) );  //poly_i[0] signifie le premier sommet de poly_i (le point de référence)
+    //polys s'intersectent ssi abstract_point est dans le NFP
+    bool b = CGAL::oriented_side(Point_2(0,0) + abstract_point, NFP) == CGAL::ON_POSITIVE_SIDE;
     return b;
-}*/
+}
