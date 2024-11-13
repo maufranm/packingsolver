@@ -82,8 +82,8 @@ Polygon_with_holes_2 irregular::NFP(
     return polyMinkowski;
     }
 
-Polygon_with_holes_2 NFP2( 
-    const Polygon_2 polyFixed, const Polygon_2 polyMobile)
+Polygon_with_holes_2 irregular::NFP( 
+    const Polygon_2& polyFixed, const Polygon_2& polyMobile)
 {
     Polygon_2 polyMobileNeg = negative_polygon(polyMobile);  // "P" to "-P"
 
@@ -109,7 +109,7 @@ Polygon_with_holes_2 NFP2(
 //struct hashmap nfp -> (it item1, it shape1, it item2, it shape2 <NFP>)
 
 
-bool is_intersected(
+bool irregular::is_intersected(
     Polygon_2 poly1, Point_2 emplacement1, Polygon_2 poly2, Point_2 emplacement2, Polygon_with_holes_2 NFP)
 {
     auto abstract_point = emplacement1 - *(poly1.vertices_begin()) - ( emplacement2 -*(poly2.vertices_begin()) );  //poly_i[0] signifie le premier sommet de poly_i (le point de référence)

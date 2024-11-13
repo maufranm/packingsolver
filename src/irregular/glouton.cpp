@@ -57,7 +57,7 @@ Point_2 random_point_in_shape(
 }
 //test si p dans rect
 
-Point_2* glouton(Instance instance,
+Point_2* glouton(Instance instance
     /*Shape container, std::vector<Shape> itemsList */)  // itemList supposed ordered by value
 {
     int nombreEssaisPlacement = 10;

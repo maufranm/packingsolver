@@ -27,8 +27,8 @@ Polygon_2 negative_polygon(
 Polygon_with_holes_2 NFP(
     const Shape& shapeFixed, const Shape& shapeMobile);
 
-Polygon_with_holes_2 NFP2( 
-    const Polygon_2 polyFixed, const Polygon_2 polyMobile);
+Polygon_with_holes_2 NFP( 
+    const Polygon_2& polyFixed, const Polygon_2& polyMobile);
 
 bool is_intersected(
     Polygon_2 poly1, Point_2 emplacement1, Polygon_2 poly2, Point_2 emplacement2, Polygon_with_holes_2 NFP);    

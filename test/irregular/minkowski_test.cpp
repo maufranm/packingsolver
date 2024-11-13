@@ -100,17 +100,20 @@ TEST(Irregular, NFP)
 
 TEST(Irregular, Intersection)
 {
-    Shape shape_1 = build_polygon_shape({{0,0},{1,0},{1,1},{0,1}});
+    Shape shape_1 = build_polygon_shape({{1,0},{1,1},{0,1}, {0,0}});
     Polygon_2 polygon_1 = get_poly(shape_1);
 
 
-    Shape shape_2 = build_polygon_shape({{0,0},{0,1},{1,1}});
+    Shape shape_2 = build_polygon_shape({{0,1},{1,1},{0,0}});
     Polygon_2 polygon_2 = get_poly(shape_2);
 
-    Polygon_with_holes_2 NFP_2 = NFP(shape_1, shape_2);
+    Polygon_with_holes_2 NFP_2 = NFP(polygon_1, polygon_2);
+    Polygon_with_holes_2 NFP_1 = NFP(polygon_1, polygon_1);
 
-    /*EXPECT_TRUE(is_intersected(polygon_1, Point_2(0,0), polygon_2, Point_2(0,0.5), NFP_2));
+    EXPECT_TRUE(is_intersected(polygon_1, Point_2(0,0), polygon_1, Point_2(0,0), NFP_1));
+    EXPECT_TRUE(is_intersected(polygon_1, Point_2(0,0.5), polygon_2, Point_2(0,1), NFP_2));
+    EXPECT_TRUE(is_intersected(polygon_1, Point_2(0,0), polygon_2, Point_2(0,0), NFP_2));
     EXPECT_FALSE(is_intersected(polygon_1, Point_2(0,0), polygon_2, Point_2(0,-1), NFP_2));
     EXPECT_FALSE(is_intersected(polygon_1, Point_2(0,0), polygon_2, Point_2(1,1), NFP_2));
-    EXPECT_FALSE(is_intersected(polygon_1, Point_2(0,0), polygon_2, Point_2(50,2), NFP_2));*/
+    EXPECT_TRUE(is_intersected(polygon_1, Point_2(50,2), polygon_2, Point_2(50,2), NFP_2));
 }
