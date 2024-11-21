@@ -1,9 +1,13 @@
 #include "irregular/minkowski.hpp"
+#include <typeinfo> // Nécessaire pour typeid
+
 
 #include <gtest/gtest.h>
+#include <boost/filesystem.hpp>
 
 using namespace packingsolver;
 using namespace packingsolver::irregular;
+namespace fs = boost::filesystem;
 
 namespace
 {
@@ -116,4 +120,13 @@ TEST(Irregular, Intersection)
     EXPECT_FALSE(is_intersected(polygon_1, Point_2(0,0), polygon_2, Point_2(0,-1), NFP_2));
     EXPECT_FALSE(is_intersected(polygon_1, Point_2(0,0), polygon_2, Point_2(1,1), NFP_2));
     EXPECT_TRUE(is_intersected(polygon_1, Point_2(50,2), polygon_2, Point_2(50,2), NFP_2));
+}
+
+
+
+TEST(oui, fi)
+{
+    std::cout << "test_print";
+    //typeid(fs::path("data") / "irregular" / "tests" / "rectangles_non_guillotine.json").name() << " "
+    //<< fs::path("data") / "irregular" / "tests" / "rectangles_non_guillotine.json";
 }
