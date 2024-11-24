@@ -1,8 +1,9 @@
 #include "irregular/minkowski.hpp"
-#include <typeinfo> // Nécessaire pour typeid
-
+#include "irregular/glouton.hpp"
+#include "packingsolver/irregular/instance_builder.hpp"
 
 #include <gtest/gtest.h>
+#include <typeinfo> // Nécessaire pour typeid
 #include <boost/filesystem.hpp>
 
 using namespace packingsolver;
@@ -122,10 +123,9 @@ TEST(Irregular, Intersection)
     EXPECT_TRUE(is_intersected(polygon_1, Point_2(50,2), polygon_2, Point_2(50,2), NFP_2));
 }
 
-
-
 TEST(oui, fi)
 {
+    EXPECT_FALSE(true);
     std::cout << "test_print";
     //typeid(fs::path("data") / "irregular" / "tests" / "rectangles_non_guillotine.json").name() << " "
     //<< fs::path("data") / "irregular" / "tests" / "rectangles_non_guillotine.json";

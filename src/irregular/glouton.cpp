@@ -1,6 +1,8 @@
 #include "packingsolver/irregular/instance.hpp"
+#include "irregular/glouton.hpp"
 #include "irregular/minkowski.hpp"
 
+#include <random>
 
 using namespace packingsolver;
 using namespace packingsolver::irregular;
@@ -13,7 +15,7 @@ def order_items(instance problème):
     retourne une liste de polygones ordonnée par priorité de placement
 */
 
-Point_2 random_point_in_shape(
+Point_2 irregular::random_point_in_shape(
     Shape polygon )
 {
     LengthDbl x_min = get_point(polygon.elements[0])[0];
@@ -39,25 +41,25 @@ Point_2 random_point_in_shape(
         }
     }
 
-    LengthDbl x=0;
-    LengthDbl y=0;
+    LengthDbl x=-1; //neg coord banned
+    LengthDbl y=-1;
     Polygon_2 poly = get_poly(polygon);
 
     while ( CGAL::oriented_side(Point_2(x,y),poly)== CGAL::ON_NEGATIVE_SIDE )
     {
         std::uniform_real_distribution<double> unif_X(x_min, x_max);
         std::default_random_engine re;
-        double x = unif_X(re);
+        x = unif_X(re);
 
-        std::uniform_real_distribution<double> unif_Y(x_min, x_max);
-        std::default_random_engine re;
-        double y = unif_Y(re);
+        std::uniform_real_distribution<double> unif_Y(y_min, y_max);
+        std::default_random_engine re2;
+        y = unif_Y(re);
     }
     return( Point_2(x,y) );
 }
 //test si p dans rect
 
-Point_2* glouton(Instance instance
+Point_2* irregular::glouton(Instance instance
     /*Shape container, std::vector<Shape> itemsList */)  // itemList supposed ordered by value
 {
     int nombreEssaisPlacement = 10;
