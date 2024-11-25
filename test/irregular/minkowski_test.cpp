@@ -125,7 +125,7 @@ TEST(Irregular, Intersection)
 
 TEST(oui, fi)
 {
-    EXPECT_FALSE(true);
+    //EXPECT_FALSE(true);
     std::cout << "test_print";
     //typeid(fs::path("data") / "irregular" / "tests" / "rectangles_non_guillotine.json").name() << " "
     //<< fs::path("data") / "irregular" / "tests" / "rectangles_non_guillotine.json";

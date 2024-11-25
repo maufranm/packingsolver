@@ -32,10 +32,11 @@ TEST(Irregular, randomPointInShape)
     Point_2 truc = random_point_in_shape(container);
 
     //vérifier égal à (-1,-1) -> pour afficher notre nombre
+    //vérif dans rectangle (méthode annexes pour trouver rectangle)
 
-    std::cout << "TesT!!!!!!!!!!!" << truc;
+    std::cout << "Test" << truc;
 
-    EXPECT_TRUE(false);
+    EXPECT_EQ(truc, Point_2(-1,-1));
 }
 
 /*TEST(Irregular, glouton)

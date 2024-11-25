@@ -45,15 +45,19 @@ Point_2 irregular::random_point_in_shape(
     LengthDbl y=-1;
     Polygon_2 poly = get_poly(polygon);
 
+    std::default_random_engine re;
+    std::random_device rd;
+    re.seed(rd());
+    std::default_random_engine re2;
+    re2.seed(rd());
+
     while ( CGAL::oriented_side(Point_2(x,y),poly)== CGAL::ON_NEGATIVE_SIDE )
     {
         std::uniform_real_distribution<double> unif_X(x_min, x_max);
-        std::default_random_engine re;
         x = unif_X(re);
 
-        std::uniform_real_distribution<double> unif_Y(y_min, y_max);
-        std::default_random_engine re2;
-        y = unif_Y(re);
+        std::uniform_real_distribution<double> unif_Y(y_min, y_max); 
+        y = unif_Y(re2);
     }
     return( Point_2(x,y) );
 }
