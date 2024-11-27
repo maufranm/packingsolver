@@ -10,39 +10,6 @@ using namespace packingsolver;
 using namespace packingsolver::irregular;
 namespace fs = boost::filesystem;
 
-namespace
-{
-
-    Shape build_polygon_shape(const std::vector<Point>& points)
-    {
-        Shape shape;
-        ElementPos pos_prev = points.size() - 1;
-        for (ElementPos pos = 0; pos < (ElementPos)points.size(); ++pos) {
-            ShapeElement element;
-            element.type = ShapeElementType::LineSegment;
-            element.start = points[pos_prev];
-            element.end = points[pos];
-            shape.elements.push_back(element);
-            pos_prev = pos;
-        }
-        return shape;
-    }
-    // get_poly
-    // est ce que je retourne un poly ? 
-    // est ce que ses points sont bien ceux que je veux ?
-    
-    // get shape
-    // est-ce que je retourne une shape
-    // est ce que j'ai les bons points ?
-
-    // neg
-    // est-ce que j'ai les bons points ?
-    // je retourne bien un poly ?
-
-    // NFP
-    // est ce que ce sont les bons points qui sont retournés ?
-}
-
 TEST(Irregular, ShapeToPolygon)
 {
     Shape shape = build_polygon_shape({{2,2},{3,2},{3,3},{2,3}});
