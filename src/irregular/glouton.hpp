@@ -11,9 +11,9 @@ namespace irregular
 {
 
 Point_2 random_point_in_shape(
-    Shape polygon );
+    const Shape &polygon );
 
-Point_2* glouton(Instance instance);
+Point_2* glouton(const Instance &instance);
 
 }
 }

@@ -20,7 +20,7 @@ TEST(Irregular, randomPointInShape)
     EXPECT_EQ(truc, Point_2(-1,-1));
 }
 
-/*TEST(Irregular, glouton)
+TEST(Irregular, glouton)
 {   
     Shape shape;
     ShapeElement shape_element;
@@ -50,4 +50,4 @@ TEST(Irregular, randomPointInShape)
     const Instance instance = instance_builder.build();
 
     glouton(instance);
-}*/
+}
