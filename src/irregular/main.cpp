@@ -75,8 +75,8 @@ int main(int argc, char *argv[])
         ("use-sequential-value-correction,", po::value<bool>(), "enable sequential-value-correction")
         ("use-column-generation,", po::value<bool>(), "enable column-generation")
         ("use-dichotomic-search,", po::value<bool>(), "enable dichotomic search")
+        ("use-local-search,", po::value<bool>(), "enable local search")
         ("sequential-value-correction-subproblem-queue-size,", po::value<NodeId>(), "set sequential value correction subproblem queue size")
-        ("sequential-value-correction-number-of-iterations,", po::value<Counter>(), "set sequential value correction number of iterations")
         ("column-generation-subproblem-queue-size,", po::value<NodeId>(), "set column generation subproblem queue size")
         ("not-anytime-tree-search-queue-size,", po::value<Counter>(), "")
         ("not-anytime-sequential-single-knapsack-subproblem-queue-size,", po::value<Counter>(), "")
@@ -113,6 +113,11 @@ int main(int argc, char *argv[])
 
     Instance instance = instance_builder.build();
 
+    //for (ItemTypeId item_type_id = 0;
+    //        item_type_id < instance.number_of_item_types();
+    //        ++item_type_id) {
+    //    instance.item_type(item_type_id).write_svg("item_type_" + std::to_string(item_type_id) + ".svg");
+    //}
     //instance.write(vm["input"].as<std::string>() + "_tmp.json");
 
     OptimizeParameters parameters;
@@ -130,6 +135,8 @@ int main(int argc, char *argv[])
         parameters.use_column_generation = vm["use-column-generation"].as<bool>();
     if (vm.count("use-dichotomic-search"))
         parameters.use_dichotomic_search = vm["use-dichotomic-search"].as<bool>();
+    if (vm.count("use-local-search"))
+        parameters.use_local_search = vm["use-local-search"].as<bool>();
 
     if (vm.count("sequential-value-correction-subproblem-queue-size"))
         parameters.sequential_value_correction_subproblem_queue_size = vm["sequential-value-correction-subproblem-queue-size"].as<NodeId>();

@@ -148,7 +148,7 @@ void optimize_sequential_single_knapsack(
     for (Counter queue_size = 1;;) {
 
         if (parameters.optimization_mode != OptimizationMode::Anytime)
-            queue_size = parameters.not_anytime_dichotomic_search_subproblem_queue_size;
+            queue_size = parameters.not_anytime_sequential_single_knapsack_subproblem_queue_size;
 
         SequentialValueCorrectionFunction<Instance, Solution> kp_solve
             = [&parameters, &queue_size](const Instance& kp_instance)
@@ -251,6 +251,7 @@ void optimize_dichotomic_search(
                     = (parameters.optimization_mode == OptimizationMode::NotAnytimeSequential)?
                     OptimizationMode::NotAnytimeSequential:
                     OptimizationMode::NotAnytime;
+                bpp_parameters.use_tree_search = 1;
                 bpp_parameters.not_anytime_tree_search_queue_size = queue_size;
                 auto bpp_output = optimize(bpp_instance, bpp_parameters);
                 return bpp_output.solution_pool;
@@ -383,11 +384,12 @@ const packingsolver::rectangle::Output packingsolver::rectangle::optimize(
                     use_sequential_single_knapsack = true;
                 } else {
                     use_sequential_value_correction = true;
+                    use_column_generation = true;
                 }
             } else {
                 use_tree_search = true;
+                use_column_generation = true;
             }
-            use_column_generation = true;
         }
     } else if (instance.objective() == Objective::BinPacking
             || instance.objective() == Objective::BinPackingWithLeftovers) {
@@ -408,12 +410,20 @@ const packingsolver::rectangle::Output packingsolver::rectangle::optimize(
                     use_sequential_single_knapsack = true;
                 } else {
                     use_sequential_value_correction = true;
+                    if (instance.number_of_bin_types() == 1)
+                        use_column_generation = true;
                 }
             } else {
                 use_tree_search = true;
+                if (mean_number_of_items_in_bins
+                        > parameters.many_items_in_bins_threshold) {
+                    use_sequential_single_knapsack = true;
+                } else {
+                    use_sequential_value_correction = true;
+                    if (instance.number_of_bin_types() == 1)
+                        use_column_generation = true;
+                }
             }
-            if (instance.number_of_bin_types() == 1)
-                use_column_generation = true;
         }
     } else if (instance.objective() == Objective::VariableSizedBinPacking) {
         // Disable algorithms which are not available for this objective.
@@ -439,20 +449,22 @@ const packingsolver::rectangle::Output packingsolver::rectangle::optimize(
                     use_sequential_single_knapsack = true;
                 } else {
                     use_sequential_value_correction = true;
+                    use_column_generation = true;
                 }
             } else {
-                if (instance.number_of_bin_types() == 1) {
-                    use_tree_search = true;
-                } else {
-                    if (mean_number_of_items_in_bins
-                            > parameters.many_items_in_bins_threshold) {
+                if (mean_number_of_items_in_bins
+                        > parameters.many_items_in_bins_threshold) {
+                    use_sequential_single_knapsack = true;
+                    if (instance.number_of_bin_types() > 1) {
                         use_dichotomic_search = true;
                     } else {
-                        use_sequential_value_correction = true;
+                        use_tree_search = true;
                     }
+                } else {
+                    use_sequential_value_correction = true;
+                    use_column_generation = true;
                 }
             }
-            use_column_generation = true;
         }
     }
 

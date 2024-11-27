@@ -39,6 +39,9 @@ struct OptimizeParameters: packingsolver::Parameters<Instance, Solution>
     /** Use column generation algorithm. */
     bool use_column_generation = false;
 
+    /** Use local search algorithm. */
+    bool use_local_search = false;
+
     /** Guides used in the tree search algorithm. */
     std::vector<GuideId> tree_search_guides;
 
@@ -52,13 +55,13 @@ struct OptimizeParameters: packingsolver::Parameters<Instance, Solution>
      * Size of the queue for the pricing knapsack subproblem of the sequential
      * value correction algorithm.
      */
-    NodeId sequential_value_correction_subproblem_queue_size = 512;
+    NodeId sequential_value_correction_subproblem_queue_size = 128;
 
     /**
      * Size of the queue for the pricing knapsack subproblem of the column
      * generation algorithm.
      */
-    NodeId column_generation_subproblem_queue_size = 512;
+    NodeId column_generation_subproblem_queue_size = 128;
 
     /*
      * Parameters for non-anytime mode
@@ -80,7 +83,7 @@ struct OptimizeParameters: packingsolver::Parameters<Instance, Solution>
      * Size of the queue in the bin packing subproblem of the dichotomic search
      * algorithm.
      */
-    NodeId not_anytime_dichotomic_search_subproblem_queue_size = 512;
+    NodeId not_anytime_dichotomic_search_subproblem_queue_size = 128;
 };
 
 const Output optimize(

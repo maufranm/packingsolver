@@ -253,8 +253,11 @@ BranchingScheme::Node BranchingScheme::child_tmp(
     }
 
     // Update uncovered_item.xe_dominance.
+    Length smallest_item_height = (node.last_bin_direction == Direction::X)?
+        instance().smallest_item_height():
+        instance().smallest_item_width();
     if (yi - node.uncovered_items[new_uncovered_item_pos].ye
-            < instance().smallest_item_height()) {
+            < smallest_item_height) {
         for (ItemPos uncovered_item_pos = new_uncovered_item_pos + 1;
                 uncovered_item_pos < node.uncovered_items.size();
                 ++uncovered_item_pos) {
@@ -265,7 +268,7 @@ BranchingScheme::Node BranchingScheme::child_tmp(
         }
     }
     if (node.uncovered_items[new_uncovered_item_pos].ys
-            < instance().smallest_item_height()) {
+            < smallest_item_height) {
         for (ItemPos uncovered_item_pos = new_uncovered_item_pos - 1;
                 uncovered_item_pos >= 0;
                 --uncovered_item_pos) {
@@ -286,8 +289,14 @@ BranchingScheme::Node BranchingScheme::child_tmp(
     node.item_weight = parent.item_weight + item_type.weight;
     node.weight_profit = parent.item_weight
         + (double)1.0 / item_type.weight / insertion.x;
-    node.squared_item_area = parent.squared_item_area + item_type.area() * item_type.area();
     node.profit = parent.profit + item_type.profit;
+    if (item_type.oriented) {
+        node.guide_item_pseudo_profit = parent.guide_item_pseudo_profit
+            + std::pow(xj, 1.2) * std::pow(yj, 1.1) / item_type.area();
+    } else {
+        node.guide_item_pseudo_profit = parent.guide_item_pseudo_profit
+            + std::pow(xj, 1.1) * std::pow(yj, 1.1) / item_type.area();
+    }
     if (parameters_.group_guiding_strategy == 0) {
         node.guide_item_area = parent.guide_item_area
             + item_type.area() * (item_type.group_id + 1);
@@ -467,6 +476,8 @@ const std::vector<BranchingScheme::Insertion>& BranchingScheme::insertions(
 {
     //std::cout << "id " << parent->id
     //    << " number_of_items " << parent->number_of_items
+    //    << " number_of_bins " << parent->number_of_bins
+    //    << " waste " << parent->waste
     //    << " group_score " << parent->group_score
     //    << " load " << (double)parent->item_area / parent->guide_area
     //    << " last_bin_middle_axle_weight " << parent->groups.front().last_bin_middle_axle_weight
@@ -1181,7 +1192,7 @@ std::ostream& packingsolver::rectangle::operator<<(
 {
     os << "item_type_id " << insertion.item_type_id
         << " rotate " << insertion.rotate
-        << " new_bin " << insertion.new_bin
+        << " new_bin " << (int)insertion.new_bin
         << " x " << insertion.x
         << " y " << insertion.y
         ;

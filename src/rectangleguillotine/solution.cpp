@@ -51,8 +51,8 @@ void Solution::update_indicators(
     bin_copies_[bin.bin_type_id] += bin.copies;
     const BinType& bin_type = instance().bin_type(bin.bin_type_id);
     cost_ += bin.copies * bin_type.cost;
-    area_ += bin.copies * bin_type.area();
     full_area_ += bin.copies * bin_type.area();
+    area_ = full_area_;
 
     width_ = 0;
     height_ = 0;
@@ -162,13 +162,13 @@ bool Solution::operator<(const Solution& solution) const
             return true;
         return solution.height() < height();
     } case Objective::Knapsack: {
-        return solution.profit() > profit();
+        return strictly_greater(solution.profit(), profit());
     } case Objective::VariableSizedBinPacking: {
         if (!solution.full())
             return false;
         if (!full())
             return true;
-        return solution.cost() < cost();
+        return strictly_lesser(solution.cost(), cost());
     } default: {
         std::stringstream ss;
         ss << "Solution rectangleguillotine::Solution does not support objective \""

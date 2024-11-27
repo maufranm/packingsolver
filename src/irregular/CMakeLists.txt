@@ -12,6 +12,7 @@ target_sources(PackingSolver_irregular PRIVATE
     polygon_trapezoidation.cpp
     polygon_simplification.cpp
     branching_scheme.cpp
+    local_search.cpp
     minkowski.cpp
     glouton.cpp)
 target_include_directories(PackingSolver_irregular PUBLIC
