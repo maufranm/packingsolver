@@ -10,6 +10,9 @@ namespace packingsolver
 namespace irregular
 {
 
+std::tuple<double, double, double, double> calculateBounds(
+    Shape polygon);
+
 Point_2 random_point_in_shape(
     Shape polygon );
 

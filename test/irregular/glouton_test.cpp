@@ -10,6 +10,7 @@ TEST(Irregular, randomPointInShape)
 {
     Shape container = build_polygon_shape({{1,1},{0,1},{5,5},{5,6}});
 
+    auto [x_min, x_max, y_min, y_max] = calculateBounds(container);
     Point_2 truc = random_point_in_shape(container);
 
     //vérifier égal à (-1,-1) -> pour afficher notre nombre
@@ -17,7 +18,11 @@ TEST(Irregular, randomPointInShape)
 
     std::cout << "Test" << truc;
 
-    EXPECT_EQ(truc, Point_2(-1,-1));
+    EXPECT_NE(truc, Point_2(-1,-1));
+    EXPECT_GE(truc.x(), x_min);
+    EXPECT_GE(truc.y(), y_min);
+    EXPECT_LE(truc.x(), x_max);
+    EXPECT_LE(truc.y(), y_max);
 }
 
 /*TEST(Irregular, glouton)

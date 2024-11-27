@@ -15,8 +15,8 @@ def order_items(instance problème):
     retourne une liste de polygones ordonnée par priorité de placement
 */
 
-Point_2 irregular::random_point_in_shape(
-    Shape polygon )
+std::tuple<double, double, double, double> irregular::calculateBounds(
+    Shape polygon)
 {
     LengthDbl x_min = get_point(polygon.elements[0])[0];
     LengthDbl x_max = x_min;
@@ -40,7 +40,14 @@ Point_2 irregular::random_point_in_shape(
             y_max = y;
         }
     }
+    
+    return {x_min, x_max, y_min, y_max};
+}
 
+Point_2 irregular::random_point_in_shape(
+    Shape polygon )
+{
+    auto [x_min, x_max, y_min, y_max] = calculateBounds(polygon);
     LengthDbl x=-1; //neg coord banned
     LengthDbl y=-1;
     Polygon_2 poly = get_poly(polygon);
