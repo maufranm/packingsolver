@@ -25,7 +25,7 @@ TEST(Irregular, randomPointInShape)
     EXPECT_LE(truc.y(), y_max);
 }
 
-/*TEST(Irregular, glouton)
+TEST(Irregular, glouton)
 {   
     Shape shape;
     ShapeElement shape_element;
@@ -55,4 +55,4 @@ TEST(Irregular, randomPointInShape)
     const Instance instance = instance_builder.build();
 
     glouton(instance);
-}*/
+}

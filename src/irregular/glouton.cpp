@@ -1,6 +1,7 @@
 #include "packingsolver/irregular/instance.hpp"
 #include "irregular/glouton.hpp"
 #include "irregular/minkowski.hpp"
+// #include "irregular/solution.hpp" // TODO: replace list solution with "Solution" class
 
 #include <random>
 
@@ -70,16 +71,20 @@ Point_2 irregular::random_point_in_shape(
 }
 //test si p dans rect
 
-Point_2* irregular::glouton(Instance instance
+Point_2* irregular::glouton(const Instance &instance
     /*Shape container, std::vector<Shape> itemsList */)  // itemList supposed ordered by value
 {
+    std::cerr << "- Entering glouton -" << std::endl;
     int nombreEssaisPlacement = 10;
     ItemTypeId N = instance.number_of_items();
     // vector of indexes
     std::vector<ItemTypeId> placed_items={};
     
+    // TODO: replace with vector to make sure memory is ok
     Point_2 item_positions[N];
     // initialise positions ( (-1,-1) at the end means that the object isn't placed)
+    int ifor = 1;
+    std::cerr << "Entering for " << ifor << std::endl; ifor++;
     for (ItemTypeId i = 0; i < N; i++)
     {
         item_positions[i] = Point_2(-1,-1);
@@ -89,11 +94,14 @@ Point_2* irregular::glouton(Instance instance
     std::vector<Polygon_2> items_converted_to_polygons={};
 
 
+    std::cerr << "Entering for " << ifor << std::endl; ifor++;
     for (ItemTypeId i=0; i<N; i++)    // all my homies hate shapes
     {
+        std::cerr << "Getting " << i << std::endl;
         items_converted_to_polygons.push_back(get_poly(instance.item_type(i).shapes[0].shape));
     }
 
+    std::cerr << "Entering for " << ifor << std::endl; ifor++;
     for (ItemTypeId i=0; i<N; i++)    // on essaie de placer le i-ème polygone de la liste
     {
         int n=placed_items.size();
@@ -102,12 +110,14 @@ Point_2* irregular::glouton(Instance instance
         // calculs des NFP avec ce polygone
         // TODO: remplacer par hash table
         std::vector<Polygon_with_holes_2> NFPsList = {};
+        std::cerr << "Entering for " << ifor << std::endl; ifor++;
         for (int j=0; j<n; j++)
         {
             NFPsList.push_back(NFP(items_converted_to_polygons[j] , placing_polygon));
         }
 
 
+        std::cerr << "Entering for " << ifor << std::endl; ifor++;
         for (int k=0; k< nombreEssaisPlacement; k++)
         {
             
@@ -118,6 +128,7 @@ Point_2* irregular::glouton(Instance instance
 
             bool is_feasible_position = true;
             //check if current placing_polygon intersects any of the previously placed polygons
+            std::cerr << "Entering for " << ifor << std::endl; ifor++;
             for(int index_placed=0; index_placed<n; index_placed++)
             {
                 if (
@@ -139,6 +150,7 @@ Point_2* irregular::glouton(Instance instance
                 {
                     placed_items.push_back(i);
                     item_positions[i]=position;
+                    std::cerr << "Position i: " << position << std::endl;
                     break;
                 }
             // otherwise, try another position with the same polygon nombreEssaisPlacement times
