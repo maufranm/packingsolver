@@ -22,21 +22,22 @@ TEST(Irregular, randomPointInShape)
 
 TEST(Irregular, glouton)
 {   
-    Shape shape;
-    ShapeElement shape_element;
-    shape_element.type = ShapeElementType::LineSegment;
-    shape_element.start = {0, 0};
-    shape_element.end = {10, 0};
-    shape.elements.push_back(shape_element);
-    shape_element.start = {10, 0};
-    shape_element.end = {10, 10};
-    shape.elements.push_back(shape_element);
-    shape_element.start = {10, 10};
-    shape_element.end = {0, 10};
-    shape.elements.push_back(shape_element);
-    shape_element.start = {0, 10};
-    shape_element.end = {0, 0};
-    shape.elements.push_back(shape_element);  //carré droit 10 par 10
+    Shape shape = build_polygon_shape({{0,0},{10,0},{10,10},{0,10}}); //carré droit 10 par 10
+    // Shape shape;
+    // ShapeElement shape_element;
+    // shape_element.type = ShapeElementType::LineSegment;
+    // shape_element.start = {0, 0};
+    // shape_element.end = {10, 0};
+    // shape.elements.push_back(shape_element);
+    // shape_element.start = {10, 0};
+    // shape_element.end = {10, 10};
+    // shape.elements.push_back(shape_element);
+    // shape_element.start = {10, 10};
+    // shape_element.end = {0, 10};
+    // shape.elements.push_back(shape_element);
+    // shape_element.start = {0, 10};
+    // shape_element.end = {0, 0};
+    // shape.elements.push_back(shape_element);  //carré droit 10 par 10
 
     ItemShape item_shape;
     item_shape.shape = shape;

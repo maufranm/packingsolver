@@ -69,7 +69,7 @@ Point_2* irregular::glouton(const Instance &instance
 {
     std::cerr << "- Entering glouton -" << std::endl;
     int nombreEssaisPlacement = 10;
-    ItemTypeId N = instance.number_of_items();
+    ItemTypeId N = instance.number_of_item_types();
     // vector of indexes
     std::vector<ItemTypeId> placed_items={};
     
