@@ -59,9 +59,7 @@ Point_2 irregular::random_point_in_shape(
     std::default_random_engine re2;
     re2.seed(rd());
 
-    Point_2 point = Point_2(x,y);
-
-    while ( CGAL::oriented_side(point,poly)== CGAL::ON_NEGATIVE_SIDE )
+    while ( CGAL::oriented_side(Point_2(x,y),poly)== CGAL::ON_NEGATIVE_SIDE )
     {
         std::uniform_real_distribution<double> unif_X(x_min, x_max);
         x = unif_X(re);
