@@ -17,7 +17,7 @@ def order_items(instance problème):
 */
 
 std::tuple<double, double, double, double> irregular::calculateBounds(
-    Shape polygon)
+    const Shape &polygon)
 {
     LengthDbl x_min = get_point(polygon.elements[0])[0];
     LengthDbl x_max = x_min;
@@ -46,7 +46,7 @@ std::tuple<double, double, double, double> irregular::calculateBounds(
 }
 
 Point_2 irregular::random_point_in_shape(
-    Shape polygon )
+    const Shape &polygon )
 {
     auto [x_min, x_max, y_min, y_max] = calculateBounds(polygon);
     LengthDbl x=-1; //neg coord banned
@@ -59,7 +59,9 @@ Point_2 irregular::random_point_in_shape(
     std::default_random_engine re2;
     re2.seed(rd());
 
-    while ( CGAL::oriented_side(Point_2(x,y),poly)== CGAL::ON_NEGATIVE_SIDE )
+    Point_2 point = Point_2(x,y);
+
+    while ( CGAL::oriented_side(point,poly)== CGAL::ON_NEGATIVE_SIDE )
     {
         std::uniform_real_distribution<double> unif_X(x_min, x_max);
         x = unif_X(re);
@@ -74,9 +76,11 @@ Point_2 irregular::random_point_in_shape(
 Point_2* irregular::glouton(const Instance &instance
     /*Shape container, std::vector<Shape> itemsList */)  // itemList supposed ordered by value
 {
-    std::cerr << "- Entering glouton -" << std::endl;
+    // std::cerr << "- Entering glouton -" << std::endl;
     int nombreEssaisPlacement = 10;
     ItemTypeId N = instance.number_of_item_types();
+    ItemTypeId M = instance.number_of_items();
+    std::cerr << "Number of items: " << M << "Number of types: " << N << std::endl;
     // vector of indexes
     std::vector<ItemTypeId> placed_items={};
     
@@ -84,7 +88,7 @@ Point_2* irregular::glouton(const Instance &instance
     Point_2 item_positions[N];
     // initialise positions ( (-1,-1) at the end means that the object isn't placed)
     int ifor = 1;
-    std::cerr << "Entering for " << ifor << std::endl; ifor++;
+
     for (ItemTypeId i = 0; i < N; i++)
     {
         item_positions[i] = Point_2(-1,-1);
@@ -94,14 +98,14 @@ Point_2* irregular::glouton(const Instance &instance
     std::vector<Polygon_2> items_converted_to_polygons={};
 
 
-    std::cerr << "Entering for " << ifor << std::endl; ifor++;
     for (ItemTypeId i=0; i<N; i++)    // all my homies hate shapes
     {
-        std::cerr << "Getting " << i << std::endl;
         items_converted_to_polygons.push_back(get_poly(instance.item_type(i).shapes[0].shape));
     }
 
-    std::cerr << "Entering for " << ifor << std::endl; ifor++;
+
+
+
     for (ItemTypeId i=0; i<N; i++)    // on essaie de placer le i-ème polygone de la liste
     {
         int n=placed_items.size();
@@ -110,14 +114,14 @@ Point_2* irregular::glouton(const Instance &instance
         // calculs des NFP avec ce polygone
         // TODO: remplacer par hash table
         std::vector<Polygon_with_holes_2> NFPsList = {};
-        std::cerr << "Entering for " << ifor << std::endl; ifor++;
+
+        // retroactively calculate NFP
+        // note : can be same polygon (may cause bugs)
         for (int j=0; j<n; j++)
         {
             NFPsList.push_back(NFP(items_converted_to_polygons[j] , placing_polygon));
         }
 
-
-        std::cerr << "Entering for " << ifor << std::endl; ifor++;
         for (int k=0; k< nombreEssaisPlacement; k++)
         {
             
@@ -128,7 +132,7 @@ Point_2* irregular::glouton(const Instance &instance
 
             bool is_feasible_position = true;
             //check if current placing_polygon intersects any of the previously placed polygons
-            std::cerr << "Entering for " << ifor << std::endl; ifor++;
+            
             for(int index_placed=0; index_placed<n; index_placed++)
             {
                 if (
@@ -156,5 +160,8 @@ Point_2* irregular::glouton(const Instance &instance
             // otherwise, try another position with the same polygon nombreEssaisPlacement times
         }
     }
+
+
+
     return item_positions;
 }

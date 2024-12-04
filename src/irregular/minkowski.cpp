@@ -2,10 +2,10 @@
 #include "irregular/minkowski.hpp"
 #include <CGAL/minkowski_sum_2.h>
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
-typedef CGAL::Point_2<K> Point_2;
-typedef CGAL::Polygon_2<K> Polygon_2;
-typedef CGAL::Polygon_with_holes_2<K> Polygon_with_holes_2;
+// typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+// typedef CGAL::Point_2<K> Point_2;
+// typedef CGAL::Polygon_2<K> Polygon_2;
+// typedef CGAL::Polygon_with_holes_2<K> Polygon_with_holes_2;
 typedef Polygon_2::Vertex_iterator VertexIterator;
 typedef Polygon_2::Edge_const_iterator EdgeIterator;
 

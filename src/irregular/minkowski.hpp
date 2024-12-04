@@ -1,6 +1,7 @@
 #include "packingsolver/irregular/instance.hpp"
 #include <CGAL/minkowski_sum_2.h>
 
+// typedef CGAL::Exact_predicates_exact_constructions_kernel K;
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef CGAL::Point_2<K> Point_2;
 typedef CGAL::Polygon_2<K> Polygon_2;
