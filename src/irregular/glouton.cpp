@@ -77,7 +77,7 @@ Solution& irregular::glouton(const Instance &instance
     /*Shape container, std::vector<Shape> itemsList */)  // itemList supposed ordered by value
 {
     int nombreEssaisPlacement = 10;
-    ItemTypeId N = instance.number_of_items();
+    ItemTypeId N = instance.number_of_item_types();
 
     
 
@@ -90,10 +90,24 @@ Solution& irregular::glouton(const Instance &instance
 
     std::cerr << "NUMBER OF BORDERS: " << bords.size() << std::endl;
 
+       for (int i = 0; i < bords.size(); i++)
+    {
+        Shape bord_shape = bords[i];
+        for (auto el = bord_shape.elements.begin(); el != bord_shape.elements.end(); el++)
+        {
+            std::cerr << (*el).start.x << ",";
+            std::cerr << (*el).start.y << " ";
+        }
+        std::cerr << std::endl;
+    }
+
     for( int i=0; i<bords.size() ; i++)
     {
         container_borders.push_back(get_poly(bords[i]));
     }
+
+
+
     // conversion of items for NFP
     std::vector<Polygon_2> items_converted_to_polygons={};
     for (ItemTypeId i=0; i<N; i++)
@@ -125,15 +139,15 @@ Solution& irregular::glouton(const Instance &instance
 
         // calculs des NFP avec ce polygone
         // TODO: remplacer par hash table
-        std::vector<Polygon_with_holes_2> NFPsList = {};
-        for (int j=0; j<n; j++)
-        {
-            NFPsList.push_back(NFP(items_converted_to_polygons[j] , *placing_polygon));
-        }
         std::vector<Polygon_with_holes_2> NFPsList_borders = {};
         for(int index_border=0; index_border< container_borders.size(); index_border++)
         {
             NFPsList_borders.push_back(NFP(container_borders[index_border], *placing_polygon));
+        }
+        std::vector<Polygon_with_holes_2> NFPsList = {};
+        for (int j=0; j<n; j++)
+        {
+            NFPsList.push_back(NFP(items_converted_to_polygons[j] , *placing_polygon));
         }
         
 
@@ -157,7 +171,7 @@ Solution& irregular::glouton(const Instance &instance
                         position,
                         container_borders[index_border],
                         *container_borders[index_border].vertices_begin(),
-                        NFPsList[index_border])
+                        NFPsList_borders[index_border])
                 )
                 {
                         is_feasible_position = false;

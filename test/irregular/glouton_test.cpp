@@ -47,13 +47,24 @@ TEST(Irregular, glouton)
     ItemShape item_shape;
     item_shape.shape = shape;
 
-    Shape container = build_polygon_shape({{0,0},{100,0},{100,100},{0,100}});
+    // Shape container = build_polygon_shape({{0,0},{100,0},{100,100},{0,100}}); //bugged
+    // Shape container = build_polygon_shape({{0,0},{30,0},{30,30},{0,30}}); //bugged
+    // Shape container = build_polygon_shape({{0,0},{50,0},{30,25}}); //bugged
+    // Shape container = build_polygon_shape({{0,0},{30,25},{50,0}}); //bugged
+    // Shape container = build_polygon_shape({{0,1},{99,0},{100,49},{1,50}});
+    Shape container = build_polygon_shape({{0,0},{20,20},{0,40},{-20,20}});
 
     InstanceBuilder instance_builder;
-    instance_builder.set_objective(packingsolver::Objective::VariableSizedBinPacking);  //useful?
-    instance_builder.add_item_type({item_shape}, 1, 10);
+    instance_builder.set_objective(packingsolver::Objective::Knapsack);  //useful?
+    instance_builder.add_item_type({item_shape}, 1, 1);
+    instance_builder.add_item_type({item_shape}, 1, 1);
+    instance_builder.add_item_type({item_shape}, 1, 1);
+    instance_builder.add_item_type({item_shape}, 1, 1);
+    instance_builder.add_item_type({item_shape}, 1, 1);
+    instance_builder.add_item_type({item_shape}, 1, 1);
     instance_builder.add_bin_type(container, -1, 1);
     const Instance instance = instance_builder.build();
 
     glouton(instance);
+    EXPECT_EQ(true,false);
 }
