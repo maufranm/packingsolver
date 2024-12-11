@@ -117,7 +117,7 @@ Solution irregular::glouton(const Instance &instance
 
     // initialise solution instance
     Solution sol(instance);
-    sol.add_bin(0,0);
+    sol.add_bin(0,1);
 
     // vector of indexes
     std::vector<ItemTypeId> placed_item_ids={};

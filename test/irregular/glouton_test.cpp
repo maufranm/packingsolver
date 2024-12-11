@@ -66,10 +66,11 @@ TEST(Irregular, glouton)
     instance_builder.add_item_type({item_shape}, 1, 1);
 
 
-    instance_builder.add_bin_type(container, -1, 1);
+    instance_builder.add_bin_type(container, -1, 1, 1);
     const Instance instance = instance_builder.build();
 
-    glouton(instance);
+    Solution sol = glouton(instance);
+    std::cerr << std::endl << sol.number_of_items() << " were placed" << std::endl;
     EXPECT_EQ(true,false);
 }
 
