@@ -137,6 +137,7 @@ std::vector<Shape> packingsolver::irregular::borders(
         const Shape& shape)
 {
     std::vector<Shape> res;
+    std::cerr << "Début border :" << std::endl ; //même ça ne s'affiche pas dans le glouton carré droit...
 
     auto mm = shape.compute_min_max();
 
@@ -145,6 +146,7 @@ std::vector<Shape> packingsolver::irregular::borders(
     for (ElementPos element_pos = 0;
             element_pos < shape.elements.size();
             ++element_pos) {
+                //std::cerr << "borders test :" << element_pos << std::endl ;
         const ShapeElement& shape_element = shape.elements[element_pos];
         if (shape_element.start.x == mm.first.x) {
             element_0_pos = element_pos;
@@ -160,6 +162,7 @@ std::vector<Shape> packingsolver::irregular::borders(
             ++element_pos) {
         const ShapeElement& element = shape.elements[(element_0_pos + element_pos) % shape.elements.size()];
         //std::cout << "element_pos " << ((element_0_pos + element_pos) % bin_type.shape.elements.size()) << " / " << bin_type.shape.elements.size() << ": " << element.to_string() << std::endl;
+        //std::cerr << element_pos << std::endl ;
         shape_border.elements.push_back(element);
         bool close = false;
         if (start_border == 0) {
@@ -261,6 +264,19 @@ std::vector<Shape> packingsolver::irregular::borders(
                 res.push_back(shape_border.reverse());
             shape_border.elements.clear();
         }
+    }
+
+    std::cerr << "NUMBER OF BORDERS: " << res.size() << std::endl;
+
+       for (int i = 0; i < res.size(); i++)
+    {
+        Shape bord_shape = res[i];
+        for (auto el = bord_shape.elements.begin(); el != bord_shape.elements.end(); el++)
+        {
+            std::cerr << (*el).start.x << ",";
+            std::cerr << (*el).start.y << " ";
+        }
+        std::cerr << std::endl;
     }
 
     return res;

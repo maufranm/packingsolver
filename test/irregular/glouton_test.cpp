@@ -35,17 +35,15 @@ TEST(Irregular, glouton)
 
     // Shape container = build_polygon_shape({{0,0},{100,0},{100,100},{0,100}}); //bugged boucle infini
     // Shape container = build_polygon_shape({{0,0},{30,0},{30,30},{0,30}});
-    //Shape container = build_polygon_shape({{0,0},{50,0},{0,50}}); //same
+    // Shape container = build_polygon_shape({{0,0},{50,0},{0,50}}); //same
 
-    Shape container = build_polygon_shape({{0,0},{50,0},{30,30}}); //bugged NUMBER OF BORDERS: 1 ; 50,0 0,0 30,30 et place rien...
+    // Shape container = build_polygon_shape({{0,0},{50,0},{30,30}}); //bugged NUMBER OF BORDERS: 1 ; 50,0 0,0 30,30 et place rien...
     // Shape container = build_polygon_shape({{0,0},{50,50},{0,100}});  //same
-    // Shape container = build_polygon_shape({{0,0},{100,50},{200,100},{50,250},{0,150}}); // NUMBER OF BORDERS: 10,0 0,150 50,250 200,100 et place rien...
+    // Shape container = build_polygon_shape({{0,0},{200,100},{50,250},{0,150}}); // NUMBER OF BORDERS: 1 ; 0,0 0,150 50,250 200,100 et place rien...
 
     // Shape container = build_polygon_shape({{0,1},{99,0},{100,49},{1,50}});  //ok
     //Shape container = build_polygon_shape({{0,0},{50,50},{0,100},{-50,50}});  //ok
-    //Shape container = build_polygon_shape({{0,0},{50,50},{0,100},{-40,60},{-40,40}}); // OK (??? il y a un bord vertical)
-
-    //Shape container = build_polygon_shape({{0,0},{100,100},{50,250},{0,150}});
+    Shape container = build_polygon_shape({{0,0},{50,50},{0,100},{-40,60},{-40,40}}); // OK (??? il y a un bord vertical)
 
 
 
@@ -76,12 +74,23 @@ TEST(Irregular, glouton)
 
 TEST(Irregular, borders){
 
+    //cas où le glouton ne place rien
     Shape container = build_polygon_shape({{0,0},{50,0},{30,30}});
+    
+    //cas infini
+    // Shape container = build_polygon_shape({{0,0},{100,0},{100,100},{0,100}}); 
+    /*ceci renvoie
+Début border :
+NUMBER OF BORDERS: 3
+0,0 0,0 100,0
+100,0 100,0 100,100
+100,100 100,100 0,100
+    donc il manque un côté mais ça se termine bien. Ce qui n'est pas le cas du glouton avec ce container...*/
 
     std::vector<Shape> bords = borders(container);
 
-    std::vector<Shape> faux_bords = { container };
-    std::vector<Shape> vrais_bords = {  build_polygon_shape({{0,0},{0,30},{30,30}}) , build_polygon_shape({{30,30},{30,50},{0,50}}) };
+    std::vector<Shape> faux_bords = { container }; //résultat obtenu après test
+    std::vector<Shape> vrais_bords = {  build_polygon_shape({{0,0},{0,30},{30,30}}) , build_polygon_shape({{30,30},{30,50},{50,0}}) };  //résultat attendu
 
 
     //EXPECT_EQ( bords , faux_bords );
@@ -102,7 +111,5 @@ cmake --build build --config Release --parallel
 cmake --install build --config Release --prefix install
 
 cd build/test/irregular
-ctest --output-on-failure --parallel
-
-ctest -- verbose --parallel
+ctest --output-on-failure --parallel  /OU:/ ctest -- verbose --parallel
 */
