@@ -42,7 +42,11 @@ TEST(Irregular, glouton)
 
     // Shape container = build_polygon_shape({{0,1},{99,0},{100,49},{1,50}});  //ok
     //Shape container = build_polygon_shape({{0,0},{50,50},{0,100},{-50,50}});  //ok
-    Shape container = build_polygon_shape({{0,0},{50,50},{0,100},{-40,60},{-40,40}}); // OK (??? il y a un bord vertical)
+    //Shape container = build_polygon_shape({{0,0},{50,50},{0,100},{-40,60},{-40,40}}); // OK (??? il y a un bord vertical)
+
+    Shape container = build_polygon_shape({{0,0},{100,50},{200,100},{50,250},{0,150}});
+
+
 
     InstanceBuilder instance_builder;
     instance_builder.set_objective(packingsolver::Objective::Knapsack);  //useful?
@@ -68,6 +72,14 @@ TEST(Irregular, glouton)
     EXPECT_EQ(true,false);
 }
 
+TEST(Irregular, borders){
+
+    Shape container = build_polygon_shape({{0,0},{50,0},{30,25}});
+
+    std::vector<Shape> bords = borders(container);
+
+
+}
 /*
 cmake --build build --config Release --parallel
 cmake --install build --config Release --prefix install

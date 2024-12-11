@@ -14,7 +14,8 @@ typedef CGAL::Polygon_2<K> Polygon_2;
 typedef CGAL::Polygon_with_holes_2<K> Polygon_with_holes_2;
 typedef Polygon_2::Vertex_iterator VertexIterator;
 typedef Polygon_2::Edge_const_iterator EdgeIterator;
-typedef GeneralPolygonWithHoles_2::Hole_const_iterator HoleIterator;
+typedef Polygon_2::Hole_iterator HoleIterator;
+
 
 
 using namespace packingsolver;
@@ -26,11 +27,12 @@ std::vector< std::pair<Point_2, Point_2> > get_edges(Polygon_with_holes_2 poly)
     Polygon_2 contour = poly.outer_boundary();
     //prendre arrêtes
 
-    for( Hole_const_iterator index = poly.holes_begin; index ++)
-    for( int i =0; i<poly.number_of_holes(); i++){
-        poly.holes_begin
+    auto poly.holes_begin();
 
-    }
+    // for( Hole_const_iterator index = poly.holes_begin; index ++)
+    // for( int i =0; i<poly.number_of_holes(); i++){
+
+    // }
 
 
 }

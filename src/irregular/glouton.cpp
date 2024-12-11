@@ -73,7 +73,7 @@ Point_2 irregular::random_point_in_shape(
  * GLOUTON
  * return: solution, where bl_corner is the placement of the first point for each item
  */
-Solution& irregular::glouton(const Instance &instance
+Solution irregular::glouton(const Instance &instance
     /*Shape container, std::vector<Shape> itemsList */)  // itemList supposed ordered by value
 {
     int nombreEssaisPlacement = 25;
@@ -116,8 +116,8 @@ Solution& irregular::glouton(const Instance &instance
     }
 
     // initialise solution instance
-    Solution* sol(new Solution(instance));
-    sol -> add_bin(0,0);
+    Solution sol(instance);
+    sol.add_bin(0,0);
 
     // vector of indexes
     std::vector<ItemTypeId> placed_item_ids={};
@@ -185,7 +185,7 @@ Solution& irregular::glouton(const Instance &instance
             for(int index_placed=0; index_placed<n; index_placed++) 
             {
                 //NB: bl_corner is not a corner but a position for us
-                Point point = sol -> bin(0).items[index_placed].bl_corner;
+                Point point = sol.bin(0).items[index_placed].bl_corner;
                 if (
                     is_intersected(
                         *placing_polygon,
@@ -205,7 +205,7 @@ Solution& irregular::glouton(const Instance &instance
             if(is_feasible_position)
                 {
                     placed_item_ids.push_back(i);
-                    sol -> add_item( 0, i, {position[0],position[1]}, 0, false);
+                    sol.add_item( 0, i, {position[0],position[1]}, 0, false);
                     std::cerr << "PLACÉ en :" << position << std::endl;
                     break;
                 }
@@ -213,5 +213,5 @@ Solution& irregular::glouton(const Instance &instance
             std::cerr << "réessaie - ";
         }
     }
-    return *sol;
+    return sol;
 }
