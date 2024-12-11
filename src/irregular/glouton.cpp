@@ -1,7 +1,4 @@
-#include "packingsolver/irregular/instance.hpp"
 #include "irregular/glouton.hpp"
-#include "irregular/minkowski.hpp"
-// #include "irregular/solution.hpp" // TODO: replace list solution with "Solution" class
 
 #include <random>
 
@@ -41,7 +38,7 @@ std::tuple<double, double, double, double> irregular::calculateBounds(
             y_max = y;
         }
     }
-    
+
     return {x_min, x_max, y_min, y_max};
 }
 
@@ -71,75 +68,110 @@ Point_2 irregular::random_point_in_shape(
 }
 //test si p dans rect
 
-Point_2* irregular::glouton(const Instance &instance
+
+/*
+ * GLOUTON
+ * return: solution, where bl_corner is the placement of the first point for each item
+ */
+Solution& irregular::glouton(const Instance &instance
     /*Shape container, std::vector<Shape> itemsList */)  // itemList supposed ordered by value
 {
-    // std::cerr << "- Entering glouton -" << std::endl;
-    int nombreEssaisPlacement = 10;
+    int nombreEssaisPlacement = 25;
     ItemTypeId N = instance.number_of_item_types();
-    ItemTypeId M = instance.number_of_items();
-    std::cerr << "Number of items: " << M << "Number of types: " << N << std::endl;
-    // vector of indexes
-    std::vector<ItemTypeId> placed_items={};
-    
-    // TODO: replace with vector to make sure memory is ok
-    Point_2 item_positions[N];
-    // initialise positions ( (-1,-1) at the end means that the object isn't placed)
-    int ifor = 1;
 
-    for (ItemTypeId i = 0; i < N; i++)
+    
+
+    /* CONVERSIONS */
+    // conversion from Shape "edges" to Polygon_2 "edges"
+    Shape container = irregular::clean_shape(instance.bin_type(0).shape);
+    std::vector<Shape> bords = borders(container);
+    
+    std::vector<Polygon_2> container_borders={};
+
+    std::cerr << "NUMBER OF BORDERS: " << bords.size() << std::endl;
+
+       for (int i = 0; i < bords.size(); i++)
     {
-        item_positions[i] = Point_2(-1,-1);
+        Shape bord_shape = bords[i];
+        for (auto el = bord_shape.elements.begin(); el != bord_shape.elements.end(); el++)
+        {
+            std::cerr << (*el).start.x << ",";
+            std::cerr << (*el).start.y << " ";
+        }
+        std::cerr << std::endl;
     }
-    
-    // std::vector<Point_2> solution_placement;
+
+    for( int i=0; i<bords.size() ; i++)
+    {
+        container_borders.push_back(get_poly(bords[i]));
+    }
+
+
+
+    // conversion of items for NFP
     std::vector<Polygon_2> items_converted_to_polygons={};
-
-
-    for (ItemTypeId i=0; i<N; i++)    // all my homies hate shapes
+    for (ItemTypeId i=0; i<N; i++)
     {
         items_converted_to_polygons.push_back(get_poly(instance.item_type(i).shapes[0].shape));
     }
 
+    // initialise solution instance
+    Solution* sol(new Solution(instance));
+    sol -> add_bin(0,0);
 
+    // vector of indexes
+    std::vector<ItemTypeId> placed_item_ids={};
+    
 
+    // Point_2 item_positions[N];
+    // // initialise positions ( (-1,-1) at the end means that the object isn't placed)
+    // for (ItemTypeId i = 0; i < N; i++)
+    // {
+    //     item_positions[i] = Point_2(-1,-1);
+    // }
+    
 
-    for (ItemTypeId i=0; i<N; i++)    // on essaie de placer le i-ème polygone de la liste
+    /* PLACING ITH ITEM */
+    for (ItemTypeId i=0; i<N; i++)
     {
-        int n=placed_items.size();
-        Polygon_2 placing_polygon = items_converted_to_polygons[i];
+        int n=placed_item_ids.size();
+        Polygon_2* placing_polygon = &items_converted_to_polygons[i];
 
         // calculs des NFP avec ce polygone
         // TODO: remplacer par hash table
+        std::vector<Polygon_with_holes_2> NFPsList_borders = {};
+        for(int index_border=0; index_border< container_borders.size(); index_border++)
+        {
+            NFPsList_borders.push_back(NFP(container_borders[index_border], *placing_polygon));
+        }
         std::vector<Polygon_with_holes_2> NFPsList = {};
-
-        // retroactively calculate NFP
-        // note : can be same polygon (may cause bugs)
         for (int j=0; j<n; j++)
         {
-            NFPsList.push_back(NFP(items_converted_to_polygons[j] , placing_polygon));
+            NFPsList.push_back(NFP(items_converted_to_polygons[j] , *placing_polygon));
         }
+        
+
 
         for (int k=0; k< nombreEssaisPlacement; k++)
         {
             
-            Point_2 position = random_point_in_shape(instance.bin_type(0).shape);
+            Point_2 position = random_point_in_shape(container);
 
 
 
 
             bool is_feasible_position = true;
-            //check if current placing_polygon intersects any of the previously placed polygons
-            
-            for(int index_placed=0; index_placed<n; index_placed++)
+            // check if current placing_polygon is totally inside the container
+            // NB: only the reference point is in the container as far as we know
+            for(int index_border=0; index_border< NFPsList_borders.size(); index_border++) 
             {
                 if (
                     is_intersected(
-                        placing_polygon,
+                        *placing_polygon,
                         position,
-                        items_converted_to_polygons[placed_items[index_placed]],
-                        item_positions[placed_items[index_placed]],
-                        NFPsList[index_placed])
+                        container_borders[index_border],
+                        *container_borders[index_border].vertices_begin(),
+                        NFPsList_borders[index_border])
                 )
                 {
                         is_feasible_position = false;
@@ -147,19 +179,39 @@ Point_2* irregular::glouton(const Instance &instance
                 }
             }
 
+            if (is_feasible_position) {
+            
+            //check if current placing_polygon intersects any of the previously placed polygons
+            for(int index_placed=0; index_placed<n; index_placed++) 
+            {
+                //NB: bl_corner is not a corner but a position for us
+                Point point = sol -> bin(0).items[index_placed].bl_corner;
+                if (
+                    is_intersected(
+                        *placing_polygon,
+                        position,
+                        items_converted_to_polygons[placed_item_ids[index_placed]],
+                        Point_2(point.x,point.y),
+                        NFPsList[index_placed])
+                )
+                {
+                        is_feasible_position = false;
+                        break;
+                }
+            }
+            }
+
             //if a correct position is found, save it and test next polygon
             if(is_feasible_position)
                 {
-                    placed_items.push_back(i);
-                    item_positions[i]=position;
-                    std::cerr << "Position i: " << position << std::endl;
+                    placed_item_ids.push_back(i);
+                    sol -> add_item( 0, i, {position[0],position[1]}, 0, false);
+                    std::cerr << "PLACÉ en :" << position << std::endl;
                     break;
                 }
             // otherwise, try another position with the same polygon nombreEssaisPlacement times
+            std::cerr << "réessaie - ";
         }
     }
-
-
-
-    return item_positions;
+    return *sol;
 }

@@ -1,4 +1,6 @@
 #include "packingsolver/irregular/instance.hpp"
+#include "packingsolver/irregular/solution.hpp"
+#include "irregular/shape.hpp"
 #include "irregular/minkowski.hpp"
 #include <CGAL/minkowski_sum_2.h>
 
@@ -18,7 +20,7 @@ std::tuple<double, double, double, double> calculateBounds(
 Point_2 random_point_in_shape(
     const Shape &polygon );
 
-Point_2* glouton(const Instance &instance);
+Solution& glouton(const Instance &instance);
 
 }
 }
