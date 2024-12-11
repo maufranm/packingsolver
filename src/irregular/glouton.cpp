@@ -14,7 +14,7 @@ def order_items(instance problème):
 */
 
 std::tuple<double, double, double, double> irregular::calculateBounds(
-    Shape polygon)
+    const Shape &polygon)
 {
     LengthDbl x_min = get_point(polygon.elements[0])[0];
     LengthDbl x_max = x_min;
