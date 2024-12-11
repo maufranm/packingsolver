@@ -37,14 +37,15 @@ TEST(Irregular, glouton)
     // Shape container = build_polygon_shape({{0,0},{30,0},{30,30},{0,30}});
     //Shape container = build_polygon_shape({{0,0},{50,0},{0,50}}); //same
 
-    // Shape container = build_polygon_shape({{0,0},{50,0},{30,25}}); //bugged NUMBER OF BORDERS: 1 ; 50,0 0,0 30,30 et place rien...
-    //Shape container = build_polygon_shape({{0,0},{50,50},{0,100}});  //same
+    Shape container = build_polygon_shape({{0,0},{50,0},{30,30}}); //bugged NUMBER OF BORDERS: 1 ; 50,0 0,0 30,30 et place rien...
+    // Shape container = build_polygon_shape({{0,0},{50,50},{0,100}});  //same
+    // Shape container = build_polygon_shape({{0,0},{100,50},{200,100},{50,250},{0,150}}); // NUMBER OF BORDERS: 10,0 0,150 50,250 200,100 et place rien...
 
     // Shape container = build_polygon_shape({{0,1},{99,0},{100,49},{1,50}});  //ok
     //Shape container = build_polygon_shape({{0,0},{50,50},{0,100},{-50,50}});  //ok
     //Shape container = build_polygon_shape({{0,0},{50,50},{0,100},{-40,60},{-40,40}}); // OK (??? il y a un bord vertical)
 
-    Shape container = build_polygon_shape({{0,0},{100,50},{200,100},{50,250},{0,150}});
+    //Shape container = build_polygon_shape({{0,0},{100,100},{50,250},{0,150}});
 
 
 
@@ -74,16 +75,33 @@ TEST(Irregular, glouton)
 
 TEST(Irregular, borders){
 
-    Shape container = build_polygon_shape({{0,0},{50,0},{30,25}});
+    Shape container = build_polygon_shape({{0,0},{50,0},{30,30}});
 
     std::vector<Shape> bords = borders(container);
 
+    std::vector<Shape> faux_bords = { container };
+    std::vector<Shape> vrais_bords = {  build_polygon_shape({{0,0},{0,30},{30,30}}) , build_polygon_shape({{30,30},{30,50},{0,50}}) };
+
+
+    //EXPECT_EQ( bords , faux_bords );
+    //EXPECT_EQ( bords , vrais_bords );
+    ASSERT_EQ( bords.size() , faux_bords.size() );
+    EXPECT_EQ( bords.size() , vrais_bords.size() );
 
 }
+
+
+
 /*
+cd ~/packingsolver
+
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
 cmake --build build --config Release --parallel
 cmake --install build --config Release --prefix install
 
 cd build/test/irregular
 ctest --output-on-failure --parallel
+
+ctest -- verbose --parallel
 */
