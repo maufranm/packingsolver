@@ -309,7 +309,7 @@ void Instance::write(
         << "minimum_distance_1_cuts," << parameters().minimum_distance_1_cuts << std::endl
         << "maximum_distance_1_cuts," << parameters().maximum_distance_1_cuts << std::endl
         << "minimum_distance_2_cuts," << parameters().minimum_distance_2_cuts << std::endl
-        << "minimum_waste-length," << parameters().minimum_waste_length << std::endl
+        << "minimum_waste_length," << parameters().minimum_waste_length << std::endl
         << "maximum_number_2_cuts," << parameters().maximum_number_2_cuts << std::endl
         << "cut_thickness," << parameters().cut_thickness << std::endl;
 }
@@ -336,7 +336,10 @@ std::ostream& Instance::format(
             << "Minimum waste length:                  " << parameters().minimum_waste_length << std::endl
             << "Maximum number of consecutive 2-cuts:  " << parameters().maximum_number_2_cuts << std::endl
             << "Cut through defects:                   " << parameters().cut_through_defects << std::endl
-            << "Cut thickness:                         " << parameters().cut_thickness << std::endl;
+            << "Cut thickness:                         " << parameters().cut_thickness << std::endl
+            << "Maximum item copies:                   " << maximum_item_copies() << std::endl
+            << "Maximum bin cost:                      " << maximum_bin_cost() << std::endl
+            ;
     }
 
     if (verbosity_level >= 2) {

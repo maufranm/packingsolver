@@ -55,10 +55,17 @@ BinTypeId InstanceBuilder::add_bin_type(
                 "'boxstacks::InstanceBuilder::add_bin_type'"
                 " requires 'copies_min >= 0'.");
     }
-    if (copies_min > copies) {
-        throw std::runtime_error(
-                "'boxstacks::InstanceBuilder::add_bin_type'"
-                " requires 'copies_min <= copies'.");
+    if (copies != -1) {
+        if (copies <= 0) {
+            throw std::runtime_error(
+                    "'boxstacks::InstanceBuilder::add_bin_type'"
+                    " requires 'copies > 0' or 'copies == -1'.");
+        }
+        if (copies_min > copies) {
+            throw std::runtime_error(
+                    "'boxstacks::InstanceBuilder::add_bin_type'"
+                    " requires 'copies_min <= copies' or 'copies == -1'.");
+        }
     }
 
     BinType bin_type;
@@ -101,6 +108,15 @@ void InstanceBuilder::add_defect(
         Length rect_x,
         Length rect_y)
 {
+    if (bin_type_id >= instance_.bin_types_.size()) {
+        throw std::invalid_argument(
+                "boxstacks::InstanceBuilder::add_defect"
+                ". bin_type_id: " + std::to_string(bin_type_id)
+                + "; instance_.bin_types_.size(): "
+                + std::to_string(instance_.bin_types_.size())
+                + ".");
+    }
+
     BinType& bin_type = instance_.bin_types_[bin_type_id];
 
     rectangle::Defect defect;
@@ -174,25 +190,12 @@ void InstanceBuilder::set_bin_types_infinite_y()
     }
 }
 
-ItemPos InstanceBuilder::compute_number_of_items() const
-{
-    ItemPos number_of_items = 0;
-    for (ItemTypeId item_type_id = 0;
-            item_type_id < instance_.number_of_item_types();
-            ++item_type_id) {
-        const ItemType& item_type = instance_.item_type(item_type_id);
-        number_of_items += item_type.copies;
-    }
-    return number_of_items;
-}
-
 void InstanceBuilder::set_bin_types_infinite_copies()
 {
-    ItemPos number_of_items = compute_number_of_items();
     for (BinTypeId bin_type_id = 0;
             bin_type_id < instance_.number_of_bin_types();
             ++bin_type_id) {
-        instance_.bin_types_[bin_type_id].copies = number_of_items;
+        instance_.bin_types_[bin_type_id].copies = -1;
     }
 }
 
@@ -218,10 +221,40 @@ ItemTypeId InstanceBuilder::add_item_type(
         int rotations,
         GroupId group_id)
 {
+    if (x < 0) {
+        throw std::invalid_argument(
+                "boxstacks::InstanceBuilder::add_item_type."
+                " item type x "
+                + std::to_string(x)
+                + " must be >= 0.");
+    }
+    if (y < 0) {
+        throw std::invalid_argument(
+                "boxstacks::InstanceBuilder::add_item_type."
+                " item type y "
+                + std::to_string(y)
+                + " must be >= 0.");
+    }
+    if (z < 0) {
+        throw std::invalid_argument(
+                "boxstacks::InstanceBuilder::add_item_type."
+                " item type z "
+                + std::to_string(y)
+                + " must be >= 0.");
+    }
     if (copies <= 0) {
-        throw std::runtime_error(
-                "'boxstacks::InstanceBuilder::add_item_type'"
-                " requires 'copies > 0'.");
+        throw std::invalid_argument(
+                "boxstacks::InstanceBuilder::add_item_type."
+                " item type copies "
+                + std::to_string(copies)
+                + " must be >= 0.");
+    }
+    if (group_id < 0) {
+        throw std::invalid_argument(
+                "boxstacks::InstanceBuilder::add_item_type."
+                " item type group id "
+                + std::to_string(group_id)
+                + " must be >= 0.");
     }
 
     ItemType item_type;
@@ -721,6 +754,9 @@ Instance InstanceBuilder::build()
             bin_type_id < instance_.number_of_bin_types();
             ++bin_type_id) {
         const BinType& bin_type = instance_.bin_type(bin_type_id);
+        // Update bin_type.copies.
+        if (bin_type.copies == -1)
+            instance_.bin_types_[bin_type_id].copies = instance_.number_of_items();
         // Update bins_volume_.
         instance_.bin_volume_ += bin_type.copies * bin_type.volume();
         // Update bins_area_.

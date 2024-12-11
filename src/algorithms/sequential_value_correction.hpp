@@ -16,7 +16,7 @@
  * For Variable-sized bin packing, this algorithm should require less
  * computational effort to find a good solution than the other algorithms for
  * this objective.
- * For multiple knapsck and bin packing, it is useful for boxstacks problem
+ * For multiple knapsack and bin packing, it is useful for boxstacks problem
  * type since, in this case, tree search might not be applied directly to get a
  * good solution.
  *
@@ -101,7 +101,7 @@ SequentialValueCorrectionOutput<Instance, Solution> sequential_value_correction(
         if (instance.objective() == Objective::Knapsack) {
             profits[item_type_id] = instance.item_type(item_type_id).profit;
         } else {
-            profits[item_type_id] = instance.item_type(item_type_id).space();
+            profits[item_type_id] = std::pow(instance.item_type(item_type_id).space(), 1.1);
         }
         //std::cout << "item_type_id " << item_type_id
         //    << " profit " << profits[item_type_id]
@@ -123,7 +123,7 @@ SequentialValueCorrectionOutput<Instance, Solution> sequential_value_correction(
         std::vector<double> item_type_adjusted_space(instance.number_of_item_types(), 0.0);
 
         // For VBPP objective, we store the solutions found for each bin type
-        // at each iterations. Thus, at the next iteration, we can check if the
+        // at each iteration. Thus, at the next iteration, we can check if the
         // previously computed ones are still feasible.
         std::vector<std::pair<Solution, Profit>> solutions_cur(
                 instance.number_of_bin_types(),
@@ -157,21 +157,21 @@ SequentialValueCorrectionOutput<Instance, Solution> sequential_value_correction(
             std::vector<BinTypeId> bin_type_ids;
             if (instance.objective() == Objective::VariableSizedBinPacking) {
                 // Start with mandatory bins (bin types with copies_min > 0).
-                BinTypeId smallest_mandaotry_bin_type_id = -1;
+                BinTypeId smallest_mandatory_bin_type_id = -1;
                 for (BinTypeId bin_type_id = 0;
                         bin_type_id < instance.number_of_bin_types();
                         ++bin_type_id) {
                     const auto& bin_type = instance.bin_type(bin_type_id);
                     if (solution.bin_copies(bin_type_id) >= bin_type.copies_min)
                         continue;
-                    if (smallest_mandaotry_bin_type_id == -1
-                            || bin_type.space() < instance.bin_type(smallest_mandaotry_bin_type_id).space()) {
-                        smallest_mandaotry_bin_type_id = bin_type_id;
+                    if (smallest_mandatory_bin_type_id == -1
+                            || bin_type.space() < instance.bin_type(smallest_mandatory_bin_type_id).space()) {
+                        smallest_mandatory_bin_type_id = bin_type_id;
                     }
                 }
 
-                if (smallest_mandaotry_bin_type_id != -1) {
-                    bin_type_ids.push_back(smallest_mandaotry_bin_type_id);
+                if (smallest_mandatory_bin_type_id != -1) {
+                    bin_type_ids.push_back(smallest_mandatory_bin_type_id);
                 } else {
                     for (BinTypeId bin_type_id = 0;
                             bin_type_id < instance.number_of_bin_types();
@@ -231,12 +231,97 @@ SequentialValueCorrectionOutput<Instance, Solution> sequential_value_correction(
                     return output;
 
                 auto kp_solution = kp_solution_pool.best();
-                Solution solution(instance);
-                if (kp_solution.number_of_different_bins() > 0)
-                    solution.append(kp_solution, 0, 1, {bin_type_id}, kp2orig);
-                solutions_cur[bin_type_id].first = solution;
+
+                if (kp_solution.number_of_different_bins() == 0) {
+                    solutions_cur[bin_type_id].first = Solution(instance);
+                    solutions_cur[bin_type_id].second = 0;
+                    continue;
+                }
+
+                // Compute the number of copies of the selected Knapsack solution
+                // to add.
+                BinPos number_of_copies
+                    = instance.bin_type(bin_type_id).copies
+                    - solution.bin_copies(bin_type_id);
+                for (ItemTypeId kp_item_type_id = 0;
+                        kp_item_type_id < kp_instance.number_of_item_types();
+                        ++kp_item_type_id) {
+                    ItemTypeId item_type_id = kp2orig[kp_item_type_id];
+                    ItemPos item_remaining_copies
+                        = instance.item_type(item_type_id).copies
+                        - solution.item_copies(item_type_id);
+                    ItemPos item_packed_copies = kp_solution.item_copies(kp_item_type_id);
+                    if (item_packed_copies > 0) {
+                        number_of_copies = std::min(
+                                number_of_copies,
+                                (BinPos)(item_remaining_copies / item_packed_copies));
+                    }
+                }
+                if (number_of_copies < 1) {
+                    throw std::logic_error(
+                            "number_of_copies: " + std::to_string(number_of_copies) + ".");
+                }
+
+                // If the objective is BinPackingWithLeftovers and this is the
+                // last bin, then we re-optimize it to maximize the leftover
+                // value.
+                if (instance.objective() == Objective::BinPackingWithLeftovers
+                        && solution.number_of_items()
+                        + number_of_copies * kp_solution.number_of_items()
+                        == instance.number_of_items()) {
+
+                    InstanceBuilder bppl_instance_builder;
+                    bppl_instance_builder.set_objective(Objective::BinPackingWithLeftovers);
+                    bppl_instance_builder.set_parameters(instance.parameters());
+                    bppl_instance_builder.add_bin_type(bin_type, 1);
+                    for (ItemTypeId item_type_id: kp2orig) {
+                        ItemPos copies
+                            = instance.item_type(item_type_id).copies
+                            - solution.item_copies(item_type_id);
+                        bppl_instance_builder.add_item_type(
+                                instance.item_type(item_type_id),
+                                profits[item_type_id],
+                                copies);
+                    }
+                    Instance bppl_instance = bppl_instance_builder.build();
+
+                    SolutionPool<Instance, Solution> bppl_solution_pool = function(bppl_instance);
+                    if (parameters.timer.needs_to_end())
+                        return output;
+
+                    auto bppl_solution = bppl_solution_pool.best();
+
+                    if (!(bppl_solution < kp_solution)) {
+                        kp_solution = bppl_solution;
+                    }
+                }
+
+                Solution kp_solution_orig(instance);
+                kp_solution_orig.append(kp_solution, 0, 1, {bin_type_id}, kp2orig);
+                solutions_cur[bin_type_id].first = kp_solution_orig;
                 solutions_cur[bin_type_id].second = kp_solution.profit();
-                output.all_patterns.push_back(solution);
+                output.all_patterns.push_back(kp_solution_orig);
+
+                // If the objective is VariableSizedBinPacking and the
+                // current solution is full, check if it is the new best
+                // solution.
+                if (instance.objective() == Objective::VariableSizedBinPacking
+                        && solution.number_of_items()
+                        + number_of_copies * kp_solution.number_of_items()
+                        == instance.number_of_items()) {
+
+                    // Update current solution.
+                    Solution solution_tmp = solution;
+                    solution_tmp.append(
+                            kp_solution_orig,
+                            0,
+                            number_of_copies);
+
+                    // Update best solution.
+                    std::stringstream ss;
+                    ss << "iteration " << output.number_of_iterations;
+                    algorithm_formatter.update_solution(solution_tmp, ss.str());
+                }
             }
 
             // Find best solution.
@@ -281,6 +366,10 @@ SequentialValueCorrectionOutput<Instance, Solution> sequential_value_correction(
                             number_of_copies,
                             (BinPos)(item_remaining_copies / item_packed_copies));
                 }
+            }
+            if (number_of_copies < 1) {
+                throw std::logic_error(
+                        "number_of_copies: " + std::to_string(number_of_copies) + ".");
             }
 
             // Update ratio_sums.
