@@ -85,7 +85,6 @@ Polygon_with_holes_2 irregular::NFP(
 Polygon_with_holes_2 irregular::NFP( 
     const Polygon_2& polyFixed, const Polygon_2& polyMobile)
 {
-    std::cout << "kkboudin";
     Polygon_2 polyMobileNeg = negative_polygon(polyMobile);  // "P" to "-P"
 
     Polygon_with_holes_2 polyMinkowski = minkowski_sum_by_full_convolution_2(polyFixed, polyMobileNeg);

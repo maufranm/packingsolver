@@ -76,7 +76,7 @@ Point_2 irregular::random_point_in_shape(
 Solution& irregular::glouton(const Instance &instance
     /*Shape container, std::vector<Shape> itemsList */)  // itemList supposed ordered by value
 {
-    int nombreEssaisPlacement = 10;
+    int nombreEssaisPlacement = 25;
     ItemTypeId N = instance.number_of_item_types();
 
     
@@ -206,10 +206,11 @@ Solution& irregular::glouton(const Instance &instance
                 {
                     placed_item_ids.push_back(i);
                     sol -> add_item( 0, i, {position[0],position[1]}, 0, false);
-                    std::cerr << "Position i: " << position << std::endl;
+                    std::cerr << "PLACÉ en :" << position << std::endl;
                     break;
                 }
             // otherwise, try another position with the same polygon nombreEssaisPlacement times
+            std::cerr << "réessaie - ";
         }
     }
     return *sol;

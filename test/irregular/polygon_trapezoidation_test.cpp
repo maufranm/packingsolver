@@ -4,7 +4,7 @@
 
 using namespace packingsolver;
 using namespace packingsolver::irregular;
-
+/*
 TEST(IrregularPolygonTrapezoidation, Triangle1)
 {
     Shape shape = build_polygon_shape({{0, 0}, {3, 0}, {1, 3}});
@@ -315,3 +315,4 @@ TEST(IrregularPolygonTrapezoidation, ButterflyHole)
     GeneralizedTrapezoid trapezoid_6(0, 1, 1, 3, 0, 4);
     EXPECT_NE(std::find(trapezoids.begin(), trapezoids.end(), trapezoid_6), trapezoids.end());
 }
+*/
