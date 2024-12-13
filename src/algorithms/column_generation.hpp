@@ -6,13 +6,13 @@
  *
  * Input:
  * - m bin types with lower bounds lᵢ, upper bounds uᵢ and costs cᵢ (i = 0..m)
- * - n item types with qᵢ copies
+ * - n item types with qⱼ copies
  * Problem:
  * - pack all items in a subset of the bins.
  * Objective:
  * - minimize the sum of the cost of the bins used.
  *
- * The linear programming formulation of the Variable-sized Bin Packing Problem
+ * The linear programming formulation of the variable-sized bin packing problem
  * based on Dantzig–Wolfe decomposition is written as follows:
  *
  * Variables:
@@ -28,16 +28,16 @@
  *                           (bounds on the number of bins for each bin type)
  *                                                         Dual variables: uⱼ
  *
- * qⱼ <= ∑ₖ xⱼᵏ yᵢᵏ <= qⱼ     for all item types j
+ * qⱼ <= ∑ₖ xⱼᵢᵏ yᵢᵏ <= qⱼ     for all item types j
  *                                      (each item selected exactly qⱼ times)
  *                                                         Dual variables: vⱼ
  *
  * The pricing problem consists in finding a variable of negative reduced cost.
- * The reduced cost of a variable yᵏ is given by:
- * rc(yᵢᵏ) = cᵢ - uᵢ - ∑ⱼ xⱼᵏ vⱼ
+ * The reduced cost of a variable yᵢᵏ is given by:
+ * rc(yᵢᵏ) = cᵢ - uᵢ - ∑ⱼ xⱼᵢᵏ vⱼ
  *
  * Therefore, finding a variable of minium reduced cost reduces to solving
- * a Bounded Knapsack Problems with items with profit vⱼ.
+ * m bounded knapsack problems with items with profit vⱼ.
  *
  */
 
@@ -53,9 +53,10 @@ namespace packingsolver
 
 using Value = columngenerationsolver::Value;
 using Column = columngenerationsolver::Column;
+using PricingOutput = columngenerationsolver::PricingSolver::PricingOutput;
 
 template <typename Instance, typename InstanceBuilder, typename Solution>
-using ColumnGenerationPricingFunction = std::function<SolutionPool<Instance, Solution>(const Instance&)>;
+using ColumnGenerationPricingFunction = std::function<Output<Instance, Solution>(const Instance&)>;
 
 template <typename Instance, typename InstanceBuilder, typename Solution>
 class ColumnGenerationPricingSolver: public columngenerationsolver::PricingSolver
@@ -75,7 +76,7 @@ public:
     virtual std::vector<std::shared_ptr<const Column>> initialize_pricing(
             const std::vector<std::pair<std::shared_ptr<const Column>, Value>>& fixed_columns);
 
-    virtual std::vector<std::shared_ptr<const Column>> solve_pricing(
+    virtual PricingOutput solve_pricing(
             const std::vector<Value>& duals);
 
 private:
@@ -233,25 +234,25 @@ std::vector<std::shared_ptr<const Column>> solution2column(
 }
 
 template <typename Instance, typename InstanceBuilder, typename Solution>
-std::vector<std::shared_ptr<const Column>> ColumnGenerationPricingSolver<Instance, InstanceBuilder, Solution>::solve_pricing(
+PricingOutput ColumnGenerationPricingSolver<Instance, InstanceBuilder, Solution>::solve_pricing(
             const std::vector<Value>& duals)
 {
     //std::cout << "solve_pricing" << std::endl;
-    std::vector<std::shared_ptr<const Column>> columns;
+    PricingOutput output;
+    Value reduced_cost_bound = 0.0;
 
     for (BinTypeId bin_type_id = 0;
             bin_type_id < instance_.number_of_bin_types();
             ++bin_type_id) {
-        if (fixed_bin_types_[bin_type_id] == instance_.bin_type(bin_type_id).copies)
+        const auto& bin_type = instance_.bin_type(bin_type_id);
+        if (fixed_bin_types_[bin_type_id] == bin_type.copies)
             continue;
 
         // Build knapsack instance.
         InstanceBuilder kp_instance_builder = InstanceBuilder();
         kp_instance_builder.set_objective(Objective::Knapsack);
         kp_instance_builder.set_parameters(instance_.parameters());
-        kp_instance_builder.add_bin_type(
-                instance_.bin_type(bin_type_id),
-                1);
+        kp_instance_builder.add_bin_type(bin_type, 1);
         std::vector<ItemTypeId> kp2vbpp;
         for (ItemTypeId item_type_id = 0;
                 item_type_id < instance_.number_of_item_types();
@@ -282,11 +283,11 @@ std::vector<std::shared_ptr<const Column>> ColumnGenerationPricingSolver<Instanc
 
         // Solve knapsack instance.
         //std::cout << "pricing_function" << std::endl;
-        SolutionPool<Instance, Solution> kp_solution_pool = pricing_function_(kp_instance);
+        auto kp_output = pricing_function_(kp_instance);
         //std::cout << "pricing_function end" << std::endl;
 
         // Retrieve column.
-        for (const Solution& kp_solution: kp_solution_pool.solutions()) {
+        for (const Solution& kp_solution: kp_output.solution_pool.solutions()) {
             if (kp_solution.number_of_bins() == 0)
                 continue;
 
@@ -326,11 +327,26 @@ std::vector<std::shared_ptr<const Column>> ColumnGenerationPricingSolver<Instanc
                 }
             }
             //std::cout << column << std::endl;
-            columns.push_back(std::shared_ptr<const Column>(new Column(column)));
+            output.columns.push_back(std::shared_ptr<const Column>(new Column(column)));
+            if (instance_.objective() == Objective::VariableSizedBinPacking
+                    || instance_.objective() == Objective::BinPacking) {
+                reduced_cost_bound = (std::min)(
+                        reduced_cost_bound,
+                        bin_type.cost - duals[bin_type_id] - kp_output.knapsack_bound);
+            } else if (instance_.objective() == Objective::Knapsack) {
+                reduced_cost_bound = (std::max)(
+                        reduced_cost_bound,
+                        kp_output.knapsack_bound - duals[bin_type_id]);
+            }
         }
     }
+
+    output.overcost
+        = (std::min)((BinPos)instance_.number_of_items(), instance_.number_of_bins())
+        * reduced_cost_bound;
+
     //std::cout << "solve_pricing end" << std::endl;
-    return columns;
+    return output;
 }
 
 }

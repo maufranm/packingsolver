@@ -242,6 +242,15 @@ struct Output: optimizationtools::Output
     /** Solution pool. */
     SolutionPool<Instance, Solution> solution_pool;
 
+    /** Knapsack bound. */
+    Profit knapsack_bound = std::numeric_limits<Profit>::infinity();
+
+    /** Bin packing bound. */
+    BinPos bin_packing_bound = 0;
+
+    /** Bin packing bound. */
+    Profit variable_sized_bin_packing_bound = 0;
+
     /** Elapsed time. */
     double time = 0.0;
 
