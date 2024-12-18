@@ -1,4 +1,5 @@
 #include "irregular/local_search.hpp"
+#include "irregular/glouton.hpp"
 
 #include "packingsolver/irregular/algorithm_formatter.hpp"
 
@@ -18,11 +19,11 @@ LocalSearchOutput packingsolver::irregular::local_search(
         return output;
 
     // TODO do something here.
-
+    //glouton(instance);
     // Update best solution.
-    //std::stringstream ss;
-    //ss << "iteration " << output.number_of_iterations;
-    //algorithm_formatter.update_solution(solution, ss.str());
+    std::stringstream ss;
+    ss << "iteration " << "greedy";
+    algorithm_formatter.update_solution(glouton(instance), ss.str());
 
     algorithm_formatter.end();
     return output;
