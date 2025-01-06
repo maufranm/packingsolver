@@ -19,11 +19,12 @@ LocalSearchOutput packingsolver::irregular::local_search(
         return output;
 
     // TODO do something here.
-    //glouton(instance);
+    Solution best_sol = glouton(instance);
     // Update best solution.
     std::stringstream ss;
+    ss << "DEBUG: best_sol.number_of_items()" << best_sol.number_of_items();
     ss << "iteration " << "greedy";
-    algorithm_formatter.update_solution(glouton(instance), ss.str());
+    algorithm_formatter.update_solution(best_sol, ss.str());
 
     algorithm_formatter.end();
     return output;

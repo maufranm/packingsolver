@@ -132,7 +132,7 @@ Solution irregular::glouton(const Instance &instance
     
 
     /* PLACING ITH ITEM */
-    for (ItemTypeId i=0; i<N; i++)
+    for (ItemTypeId i=0; i<6; i++)
     {
         int n=placed_item_ids.size();
         Polygon_2* placing_polygon = &items_converted_to_polygons[i];
