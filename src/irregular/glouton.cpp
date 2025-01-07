@@ -134,27 +134,32 @@ Solution irregular::glouton(const Instance &instance
     /* PLACING ITH ITEM */
     for (ItemTypeId i=0; i<N; i++)
     {
+        std::cerr << "DEBUG: shape number " << i << std::endl;
+
         int n=placed_item_ids.size();
-        Polygon_2* placing_polygon = &items_converted_to_polygons[i];
+        Polygon_2 placing_polygon = items_converted_to_polygons[i];
 
         // calculs des NFP avec ce polygone
         // TODO: remplacer par hash table
         std::vector<Polygon_with_holes_2> NFPsList_borders = {};
         for(int index_border=0; index_border< container_borders.size(); index_border++)
         {
-            NFPsList_borders.push_back(NFP(container_borders[index_border], *placing_polygon));
+            NFPsList_borders.push_back(NFP(container_borders[index_border], placing_polygon));
         }
+        std::cerr << "DEBUG: NFP container done ";
         std::vector<Polygon_with_holes_2> NFPsList = {};
         for (int j=0; j<n; j++)
         {
-            NFPsList.push_back(NFP(items_converted_to_polygons[j] , *placing_polygon));
+            std::cerr << "DEBUG:!NFP "<<i <<" with " << placed_item_ids[j] << " ";
+            NFPsList.push_back(NFP(items_converted_to_polygons[placed_item_ids[j]] , placing_polygon));
+            std::cerr << "DEBUG:-NFP piece "<< j <<" done" << std::endl;
         }
         
 
 
         for (int k=0; k< nombreEssaisPlacement; k++)
         {
-            
+
             Point_2 position = random_point_in_shape(container);
 
 
@@ -167,7 +172,7 @@ Solution irregular::glouton(const Instance &instance
             {
                 if (
                     is_intersected(
-                        *placing_polygon,
+                        placing_polygon,
                         position,
                         container_borders[index_border],
                         *container_borders[index_border].vertices_begin(),
@@ -188,7 +193,7 @@ Solution irregular::glouton(const Instance &instance
                 Point point = sol.bin(0).items[index_placed].bl_corner;
                 if (
                     is_intersected(
-                        *placing_polygon,
+                        placing_polygon,
                         position,
                         items_converted_to_polygons[placed_item_ids[index_placed]],
                         Point_2(point.x,point.y),

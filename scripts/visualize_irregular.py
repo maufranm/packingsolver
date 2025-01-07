@@ -151,5 +151,5 @@ fig.update_xaxes(
 fig.update_yaxes(
         scaleanchor="x",
         scaleratio=1)
-fig.save
+# fig.save
 fig.show()
