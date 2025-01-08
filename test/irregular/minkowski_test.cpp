@@ -104,7 +104,7 @@ TEST(Irregular, NFP)
     
     polyMinkowski = minkowski_sum_by_full_convolution_2(shape1, shape13_neg);
     std::cerr << polyMinkowski << std::endl;
-    Polygon_2 poly = NFP(shape1, shape13 ).outer_boundary();
+    poly = NFP(shape1, shape13 ).outer_boundary();
 
     std::cerr << poly;
     EXPECT_EQ(true,false);
