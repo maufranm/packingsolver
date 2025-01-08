@@ -6,11 +6,24 @@ using namespace packingsolver;
 using namespace packingsolver::irregular;
 
 
-/*
+/* WIP
 def order_items(instance problème):
     prend les items, calcul leur valeurs vi:= ci/aire  (ci dans instance, shape.compute_area() pour aire)
     réordonne les items par valeur vi décroissante
     retourne une liste de polygones ordonnée par priorité de placement
+Instance base_instance orderring(
+    const Instance order_instance)
+{
+    InstanceBuilder instance_builder;
+    instance_builder.set_objective(packingsolver::Objective::Knapsack);
+    instance_builder.add_bin_type(base_instance.bin_type(0), -1, 1, 1);
+
+    for (ItemTypeId i=0; i<N; i++)
+    {
+        auto = base_instance.item_type(i);
+    }
+}
+
 */
 
 std::tuple<double, double, double, double> irregular::calculateBounds(
