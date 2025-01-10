@@ -6,6 +6,10 @@ using namespace packingsolver;
 using namespace packingsolver::irregular;
 
 
+TEST(kkkkkkkkkkkkkkkkkkkkkkkk, popopopoppopopopopo)
+{
+    std::cout << 'oui';
+}
 TEST(Irregular, overlap)
 {
     
