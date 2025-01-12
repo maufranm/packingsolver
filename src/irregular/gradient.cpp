@@ -27,9 +27,13 @@ std::vector< std::pair<Point_2, Point_2> > get_edges(
     Polygon_2 poly)
 {
     std::vector< std::pair<Point_2, Point_2>> edges;
-    for (VertexIterator it; pos < (ElementPos)poly.size() - 1; ++pos)
+    for (auto pos = poly.vertices_begin(); pos != poly.vertices_end(); ++pos)
     {
-        std::pair<Point_2, Point_2> edge= { poly[pos], poly[++pos]};
+        auto next = std::next(pos); // Iterator to the next vertex
+        if (next == poly.vertices_end()) {
+            next = poly.vertices_begin(); // Wrap around to the first vertex if at the end
+        }
+        std::pair<Point_2, Point_2> edge = { *pos, *next };
         edges.push_back(edge);
     }
     edges.push_back( {*poly.vertices_begin(), *poly.vertices_end()});
@@ -39,12 +43,13 @@ std::vector< std::pair<Point_2, Point_2>> get_edges(
     Polygon_with_holes_2 poly)
 {
     Polygon_2 contour = poly.outer_boundary();
-    std::vector< std::pair<Point_2, Point_2> > edges; = get_edges(contour);
+    std::vector< std::pair<Point_2, Point_2> > edges = get_edges(contour);
 
     for (HoleIterator it=poly.holes_begin(); it!=poly.holes_end(); ++it)
     {
         Polygon_2 hole = *it;
-        edges.merge(get_edges(hole));        
+        std::vector< std::pair<Point_2, Point_2> > hole_edge = get_edges(hole);
+        edges.insert(edges.end(),hole_edge.begin(), hole_edge.end());        
     }
 }
 
@@ -82,9 +87,9 @@ std::tuple< Vect_2, double> overlap(
     std::vector< std::pair<Point_2, Point_2>> edges = get_edges(NFP);
 
     std::tuple< Vect_2, LengthDbl> min = { Vect_2(0.0 , 0.0), 0.0 };
-    for (int i=0; i<edges.size; i++)
+    for (int i=0; i<edges.size(); i++)
     {
-        Point_2 abstract_point = Point_2(0,0) + emplacement1 - *(poly1.vertices_begin()) - ( emplacement2 -*(poly2.vertices_begin()) );
+        Point_2 abstract_point = Point_2(0,0) + (emplacement1 - *(poly1.vertices_begin())) - ( emplacement2 -*(poly2.vertices_begin()) );
         Vect_2 translation = orthogonal_projection( edges[i].first , edges[i].second , abstract_point );
         LengthDbl distance = norm(translation);
         if( distance < std::get<1>(min) )
