@@ -28,9 +28,28 @@ TEST(Irregular, overlap)
     Point_2 emplacement2 = Point_2(2,3);
 
     auto truc = overlap(poly1, emplacement1, poly2, emplacement2, NFP);
-    std::tuple< Vect_2, double> solution = { Vect_2(1,0), 1.0};
+    std::tuple< Vect_2, double> solution = { Vect_2(0,1), 1.0};
 
     EXPECT_EQ(truc,solution)
+}
+
+TEST(Irregular, norm)
+{
+    EXPECT_EQ(norm(Vect_2(0.0 , 0.0)), 0.0);
+    EXPECT_EQ(norm(Vect_2(3 , 4)), 5);
+    EXPECT_EQ(norm(Vect_2(1 , 1)), sqrt(2));
+}
+
+TEST(Irregular, orthogonal_projection)
+{   
+    Vect_2 a =orthogonal_projection( Point_2(0,0), Point_2(0,3), Point_2(1,1) )
+    EXPECT_EQ( a , Vect_2(0,-1));
+
+    Vect_2 b =orthogonal_projection( Point_2(1,1), Point_2(3,3), Point_2(1,3) )
+    EXPECT_EQ( b , Vect_2(1,-1));    
+
+    Vect_2 c =orthogonal_projection( Point_2(0,0), Point_2(5,5), Point_2(10,10) )
+    EXPECT_EQ( c , Vect_2(0,0));
 }
 
 
