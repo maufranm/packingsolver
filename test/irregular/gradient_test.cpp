@@ -7,31 +7,22 @@ using namespace packingsolver;
 using namespace packingsolver::irregular;
 
 
-TEST(kkkkkkkkkkkkkkkkkkkkkkkk, popopopoppopopopopo)
+
+TEST(Gradient, Poly2Edges)
 {
-    std::cout << 'oui';
+    Polygon_2 p;
+    p.push_back(Point_2(2,3));
+    p.push_back(Point_2(2,2));
+    p.push_back(Point_2(3,2));
+    p.push_back(Point_2(3,3));
+    
+    std::vector< std::pair<Point_2, Point_2> > edges = get_edges_polygon(p);
+
+    EXPECT_EQ(edges.size(), 4);
+    EXPECT_EQ(edges[0], std::make_pair(CGAL::Point_2<CGAL::Epick>(2, 3), CGAL::Point_2<CGAL::Epick>(2, 2)));
 }
 
 
-TEST(Irregular, overlap)
-{
-    Polygon_2 poly1;
-    poly1.push_back(Point_2(0,0));
-    poly1.push_back(Point_2(0,4));
-    poly1.push_back(Point_2(4,4));
-    poly1.push_back(Point_2(4,0));
-    Polygon_2 poly2=poly1;
-
-    Polygon_with_holes_2 NFP_result = NFP(poly1,poly2);
-
-    Point_2 emplacement1 = Point_2(0,0);
-    Point_2 emplacement2 = Point_2(2,3);
-
-    auto truc = overlap(poly1, emplacement1, poly2, emplacement2, NFP_result);
-    std::tuple< Vect_2, double> solution = { Vect_2(0,1), 1.0};
-
-    EXPECT_EQ(truc,solution);
-}
 
 TEST(Irregular, Norm)
 {
@@ -52,19 +43,28 @@ TEST(Irregular, OrthogonalProjection)
     //EXPECT_EQ( c , Vect_2(0,0));
 }
 
-TEST(Gradient, Poly2Edges)
+TEST(Irregular, overlap)
 {
-    Polygon_2 p;
-    p.push_back(Point_2(2,3));
-    p.push_back(Point_2(2,2));
-    p.push_back(Point_2(3,2));
-    p.push_back(Point_2(3,3));
-    
-    std::vector< std::pair<Point_2, Point_2> > edges = get_edges_polygon(p);
+    Polygon_2 poly1;
+    poly1.push_back(Point_2(0,0));
+    poly1.push_back(Point_2(0,4));
+    poly1.push_back(Point_2(4,4));
+    poly1.push_back(Point_2(4,0));
+    Polygon_2 poly2=poly1;
 
-    EXPECT_EQ(edges.size(), 4);
-    EXPECT_EQ(edges[0], std::make_pair(CGAL::Point_2<CGAL::Epick>(2, 3), CGAL::Point_2<CGAL::Epick>(2, 2)));
+    Polygon_with_holes_2 NFP_result = NFP(poly1,poly2);
+
+    Point_2 emplacement1 = Point_2(2,3);
+    Point_2 emplacement2 = Point_2(0,0);
+    auto truc = overlap(poly1, emplacement1, poly2, emplacement2, NFP_result);
+    std::tuple< Vect_2, double> solution = { Vect_2(0,1), 1.0};
+    EXPECT_EQ(truc,solution);
+
+    auto machin = overlap(poly1, Point_2(0,5), poly2, emplacement2, NFP_result);
+    std::tuple< Vect_2, double> zero = { Vect_2(0.0 , 0.0), 0.0 };
+    EXPECT_EQ(machin, zero );
 }
+
 
 /*
 cd ~/packingsolver

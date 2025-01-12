@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <tuple>
 #include <cmath>
+#include <limits>
 
 #include "irregular/gradient.hpp"
 #include "packingsolver/irregular/instance.hpp"
@@ -86,7 +87,7 @@ std::tuple< Vect_2, double> irregular::overlap(
 
     std::vector< std::pair<Point_2, Point_2>> edges = get_edges_NFP(NFP);
 
-    std::tuple< Vect_2, LengthDbl> min = { Vect_2(0.0 , 0.0), -1.0 };
+    std::tuple< Vect_2, LengthDbl> min = { Vect_2(0.0 , 0.0), std::numeric_limits<double>::max() };
     for (int i=0; i<edges.size(); i++)
     {
         Point_2 abstract_point = Point_2(0,0) + (emplacement1 - *(poly1.vertices_begin())) - ( emplacement2 -*(poly2.vertices_begin()) );
@@ -98,21 +99,4 @@ std::tuple< Vect_2, double> irregular::overlap(
         }
     }
     return(min);
-
-/*
-    Vect_2 translation = orthogonal_projection( *(NFP.vertices_end()), *(NFP.vertices_begin()), *(poly2.vertices_begin()) ) ;
-    std::tuple< Vect_2, double > min = {translation, norm(translation)};
-
-    for (ElementPos pos = 0; pos < (ElementPos)NFP.size() - 1; ++pos)
-    {
-
-        Vect_2 translation = orthogonal_projection( NFP[pos] , NFP[++pos] , *(poly2.vertices_begin()) );
-        double distance = norm(translation);
-        if( distance < std::get<1>(min) )
-        {
-            min = { translation, distance};
-        }
-    }
-    return(min);
-*/
 }
