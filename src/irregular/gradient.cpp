@@ -5,8 +5,7 @@
 #include "irregular/gradient.hpp"
 #include "packingsolver/irregular/instance.hpp"
 #include "irregular/minkowski.hpp"
-#include <random>
-#include "irregular/glouton.hpp"
+#include "irregular/gradient.hpp"
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef CGAL::Point_2<K> Point_2;
@@ -54,14 +53,14 @@ std::vector< std::pair<Point_2, Point_2>> irregular::get_edges_NFP(
 }
 
 
-double norm(Vect_2 v)
+double irregular::norm(Vect_2 v)
 {
     double n = sqrt(v[0]*v[0] + v[1]*v[1]);
     return n;
 }
 
 // si H est le projeté orthogonal de M sur (AB), renvoie le vecteur MH
-Vect_2 orthogonal_projection(
+Vect_2 irregular::orthogonal_projection(
     Point_2 A, Point_2 B, Point_2 M)
 {
     Vect_2 v= B-A;
@@ -74,7 +73,7 @@ Vect_2 orthogonal_projection(
 
 
 // renvoie [(0,0);0] si ne s'intersectent pas, sinon vecteur de déplacement (et distance) minimal pour que le premier polygone n'intersecte plus le deuxième
-std::tuple< Vect_2, double> overlap( 
+std::tuple< Vect_2, double> irregular::overlap( 
     Polygon_2 poly1, Point_2 emplacement1, Polygon_2 poly2, Point_2 emplacement2,  Polygon_with_holes_2 NFP)
 {
     if(is_intersected(poly1, emplacement1, poly2, emplacement2, NFP)==false) 
