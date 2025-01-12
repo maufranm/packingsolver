@@ -35,7 +35,7 @@ std::vector< std::pair<Point_2, Point_2> > irregular::get_edges_polygon(
         std::pair<Point_2, Point_2> edge = { *pos, *next };
         edges.push_back(edge);
     }
-    edges.push_back( {*poly.vertices_begin(), *poly.vertices_end()});
+    return edges;
 }
 // renvoie les arrêtes (=couple de points) d'un NFP (bord extérieur + trous)
 std::vector< std::pair<Point_2, Point_2>> irregular::get_edges_NFP(
@@ -50,6 +50,7 @@ std::vector< std::pair<Point_2, Point_2>> irregular::get_edges_NFP(
         std::vector< std::pair<Point_2, Point_2> > hole_edge = get_edges_polygon(hole);
         edges.insert(edges.end(),hole_edge.begin(), hole_edge.end());        
     }
+    return edges;
 }
 
 
