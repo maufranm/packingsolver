@@ -15,11 +15,11 @@ namespace packingsolver
 namespace irregular
 {
 
-std::vector< std::pair<Point_2, Point_2> > get_edges(
-    Polygon_2 poly);
+std::vector< std::pair<Point_2, Point_2> > get_edges_polygon(
+    const Polygon_2& poly);
 
-std::vector< std::pair<Point_2, Point_2>> get_edges(
-    Polygon_with_holes_2 poly);
+std::vector< std::pair<Point_2, Point_2>> get_edges_NFP(
+    Polygon_with_holes_2& poly);
 
 std::tuple< Vect_2, double> overlap( 
     Polygon_2 poly1, Point_2 emplacement1, Polygon_2 poly2, Point_2 emplacement2,  Polygon_with_holes_2 NFP);

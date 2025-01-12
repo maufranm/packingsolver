@@ -2,6 +2,7 @@
 #include <tuple>
 #include <cmath>
 
+#include "irregular/gradient.hpp"
 #include "packingsolver/irregular/instance.hpp"
 #include "irregular/minkowski.hpp"
 #include <random>
@@ -22,8 +23,8 @@ using namespace packingsolver;
 using namespace packingsolver::irregular;
 
 
-std::vector< std::pair<Point_2, Point_2> > get_edges(
-    Polygon_2 poly)
+std::vector< std::pair<Point_2, Point_2> > irregular::get_edges_polygon(
+    const Polygon_2& poly)
 {
     std::vector< std::pair<Point_2, Point_2>> edges;
     for (auto pos = poly.vertices_begin(); pos != poly.vertices_end(); ++pos)
@@ -38,16 +39,16 @@ std::vector< std::pair<Point_2, Point_2> > get_edges(
     edges.push_back( {*poly.vertices_begin(), *poly.vertices_end()});
 }
 // renvoie les arrêtes (=couple de points) d'un NFP (bord extérieur + trous)
-std::vector< std::pair<Point_2, Point_2>> get_edges(
-    Polygon_with_holes_2 poly)
+std::vector< std::pair<Point_2, Point_2>> irregular::get_edges_NFP(
+    Polygon_with_holes_2& poly)
 {
     Polygon_2 contour = poly.outer_boundary();
-    std::vector< std::pair<Point_2, Point_2> > edges = get_edges(contour);
+    std::vector< std::pair<Point_2, Point_2> > edges = get_edges_polygon(contour);
 
     for (HoleIterator it=poly.holes_begin(); it!=poly.holes_end(); ++it)
     {
         Polygon_2 hole = *it;
-        std::vector< std::pair<Point_2, Point_2> > hole_edge = get_edges(hole);
+        std::vector< std::pair<Point_2, Point_2> > hole_edge = get_edges_polygon(hole);
         edges.insert(edges.end(),hole_edge.begin(), hole_edge.end());        
     }
 }
@@ -83,7 +84,7 @@ std::tuple< Vect_2, double> overlap(
     }
 
 
-    std::vector< std::pair<Point_2, Point_2>> edges = get_edges(NFP);
+    std::vector< std::pair<Point_2, Point_2>> edges = get_edges_NFP(NFP);
 
     std::tuple< Vect_2, LengthDbl> min = { Vect_2(0.0 , 0.0), 0.0 };
     for (int i=0; i<edges.size(); i++)

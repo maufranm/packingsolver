@@ -70,7 +70,7 @@ TEST(Irregular, glouton)
 
     Solution sol = glouton(instance);
     std::cerr << std::endl << sol.number_of_items() << " were placed" << std::endl;
-    EXPECT_EQ(true,false);
+    //EXPECT_EQ(true,false);
 }
 
 
