@@ -6,6 +6,7 @@
 #include "irregular/minkowski.hpp"
 #include <random>
 #include "irregular/glouton.hpp"
+#include "irregular/gradient.hpp"
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef CGAL::Point_2<K> Point_2;
