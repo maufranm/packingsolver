@@ -86,7 +86,7 @@ std::tuple< Vect_2, double> irregular::overlap(
 
     std::vector< std::pair<Point_2, Point_2>> edges = get_edges_NFP(NFP);
 
-    std::tuple< Vect_2, LengthDbl> min = { Vect_2(0.0 , 0.0), 0.0 };
+    std::tuple< Vect_2, LengthDbl> min = { Vect_2(0.0 , 0.0), -1.0 };
     for (int i=0; i<edges.size(); i++)
     {
         Point_2 abstract_point = Point_2(0,0) + (emplacement1 - *(poly1.vertices_begin())) - ( emplacement2 -*(poly2.vertices_begin()) );
