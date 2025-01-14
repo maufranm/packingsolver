@@ -14,7 +14,8 @@ target_sources(PackingSolver_irregular PRIVATE
     branching_scheme.cpp
     local_search.cpp
     minkowski.cpp
-    glouton.cpp)
+    glouton.cpp
+    gradient.cpp)
 target_include_directories(PackingSolver_irregular PUBLIC
     ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(PackingSolver_irregular PRIVATE
