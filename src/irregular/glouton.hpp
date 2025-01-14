@@ -18,7 +18,7 @@ std::tuple<double, double, double, double> calculateBounds(
     const Shape &polygon);
 
 Point_2 random_point_in_shape(
-    const Shape &polygon );
+    const Shape &container, const Polygon_2 &item );
 
 Solution glouton(const Instance &instance);
 
