@@ -25,7 +25,7 @@ TEST(Irregular, randomPointInShape)
     EXPECT_GE(truc.x(), x_min);
     EXPECT_GE(truc.y(), y_min);
     EXPECT_LE(truc.x(), x_max);
-    EXPECT_LE(truc.y(), y_max);*/
+    EXPECT_LE(truc.y(), y_max);
 }
 
 TEST(Irregular, glouton)
