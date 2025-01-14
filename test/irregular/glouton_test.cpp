@@ -12,7 +12,9 @@ TEST(Irregular, randomPointInShape)
     Polygon_2 item = get_poly( build_polygon_shape({{1,1},{0,1},{1,0}}) );
 
     auto [x_min, x_max, y_min, y_max] = calculateBounds(container);
+
     Point_2 truc = random_point_in_shape(container, item);
+
 
     //vérifier égal à (-1,-1) -> pour afficher notre nombre
     //vérif dans rectangle (méthode annexes pour trouver rectangle)
@@ -23,7 +25,7 @@ TEST(Irregular, randomPointInShape)
     EXPECT_GE(truc.x(), x_min);
     EXPECT_GE(truc.y(), y_min);
     EXPECT_LE(truc.x(), x_max);
-    EXPECT_LE(truc.y(), y_max);
+    EXPECT_LE(truc.y(), y_max);*/
 }
 
 TEST(Irregular, glouton)
