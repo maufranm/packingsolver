@@ -6,11 +6,24 @@ using namespace packingsolver;
 using namespace packingsolver::irregular;
 
 
-/*
+/* WIP
 def order_items(instance problème):
     prend les items, calcul leur valeurs vi:= ci/aire  (ci dans instance, shape.compute_area() pour aire)
     réordonne les items par valeur vi décroissante
     retourne une liste de polygones ordonnée par priorité de placement
+Instance base_instance orderring(
+    const Instance order_instance)
+{
+    InstanceBuilder instance_builder;
+    instance_builder.set_objective(packingsolver::Objective::Knapsack);
+    instance_builder.add_bin_type(base_instance.bin_type(0), -1, 1, 1);
+
+    for (ItemTypeId i=0; i<N; i++)
+    {
+        auto = base_instance.item_type(i);
+    }
+}
+
 */
 
 std::tuple<double, double, double, double> irregular::calculateBounds(
@@ -42,13 +55,21 @@ std::tuple<double, double, double, double> irregular::calculateBounds(
     return {x_min, x_max, y_min, y_max};
 }
 
+
+//dorénavent, cette fonction prend en argument le container ET UN ITEM et renvoie un point tel que le rectangle englobant l'item sera dans le rectangle englobant le container
 Point_2 irregular::random_point_in_shape(
-    const Shape &polygon )
+    const Shape &container, const Polygon_2 &item )
 {
-    auto [x_min, x_max, y_min, y_max] = calculateBounds(polygon);
+    auto [x_min, x_max, y_min, y_max] = calculateBounds(container);
     LengthDbl x=-1; //neg coord banned
     LengthDbl y=-1;
-    Polygon_2 poly = get_poly(polygon);
+    Polygon_2 poly = get_poly(container);
+
+    LengthDbl x_diff_right = item.right_vertex()[0][0] - item.vertices_begin()[0][0];
+    LengthDbl x_diff_left = - item.left_vertex()[0][0] + item.vertices_begin()[0][0];
+    LengthDbl y_diff_up = item.top_vertex()[0][1] - item.vertices_begin()[0][1];
+    LengthDbl y_diff_bottom = - item.bottom_vertex()[0][1] + item.vertices_begin()[0][1];
+
 
     std::default_random_engine re;
     std::random_device rd;
@@ -58,10 +79,10 @@ Point_2 irregular::random_point_in_shape(
 
     while ( CGAL::oriented_side(Point_2(x,y),poly)== CGAL::ON_NEGATIVE_SIDE )
     {
-        std::uniform_real_distribution<double> unif_X(x_min, x_max);
+        std::uniform_real_distribution<double> unif_X(x_min + x_diff_left  ,  x_max - x_diff_right);
         x = unif_X(re);
 
-        std::uniform_real_distribution<double> unif_Y(y_min, y_max); 
+        std::uniform_real_distribution<double> unif_Y(y_min + y_diff_bottom  ,  y_max - y_diff_up); 
         y = unif_Y(re2);
     }
     return( Point_2(x,y) );
@@ -155,7 +176,7 @@ Solution irregular::glouton(const Instance &instance
         for (int k=0; k< nombreEssaisPlacement; k++)
         {
             
-            Point_2 position = random_point_in_shape(container);
+            Point_2 position = random_point_in_shape(container, *placing_polygon);
 
 
 
